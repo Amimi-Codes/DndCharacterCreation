@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+  height: 100%;
+  width: 160px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #00000000;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #000000;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #cd2424;
+}
+
+.main {
+  margin-left: 160px; /* Same as the width of the sidenav */
+  font-size: 28px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+.secondary {
+  background-color: lightgrey;
+  width: 30%;
+  height: 300px;
+  border: 15px solid green;
+  padding: 50px;
+  margin: 20px;
+}
+
+#characterBuilder, #spacer, #characterSummary
+{
+  display:inline;
+  float:left;
+}
+
+</style>
+</head>
+<body>
+
+<div class="sidenav">
+  <a onclick="replaceContentInContainer('characterBuilder', 'raceSelection')">Race</a>
+  <a href="#services">Class</a>
+  <a href="#clients">Ability Scores</a>
+  <a href="#contact">Prepared Spells</a>
+  <a href="#contact">Flavour Text</a>
+</div>
+
+<div class="main">
+  <div class="secondary" id="characterBuilder"> secondary </div>
+  <div class="secondary" style="float: right;" id="characterSummary">testing</div>
+</div>
+
+<div class="secondary" id="raceSelection" style="display:none"> spacer here 
+  <button>testing</button>
+</div>
+   
+</body>
+</html> 
+
+<script>
+  function replaceContentInContainer(target, source) {
+    document.getElementById(target).innerHTML = document.getElementById(source).innerHTML;
+    console.log("testing")
+  }
+</script>

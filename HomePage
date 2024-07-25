@@ -14,7 +14,7 @@ body {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #00000000;
+  background-color: #ff464629;
   overflow-x: hidden;
   padding-top: 20px;
 }
@@ -37,19 +37,82 @@ body {
   padding: 0px 10px;
 }
 
-.secondary {
-  background-color: lightgrey;
+.leftBox {
+  display: inline-block;
   width: 30%;
-  height: 300px;
-  border: 15px solid green;
+  height: max-content;
+  background-color: rgb(239, 239, 239);
+  border: 5px solid green;
+  border-radius: 10px;
   padding: 50px;
   margin: 20px;
 }
 
-#characterBuilder, #spacer, #characterSummary
-{
-  display:inline;
-  float:left;
+.charBox {
+  width: 25%;
+  aspect-ratio: 1 / 1;
+  display: inline-block;
+  border-radius: 10px;
+  border: 2px solid rgb(57, 156, 57);
+  margin: 5px;
+  cursor: pointer; /* Add cursor pointer for usability */
+  font-size: medium;
+}
+
+.raceFeaturesBox {
+  display: inline-block;
+  width: 15%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  border: 1px solid rgb(57, 156, 57);
+  margin: 5px;
+}
+
+.modal {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    border: 1px solid #888;
+    border-radius: 5px;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modal-button {
+  margin: 5px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.modal-button:hover {
+  background-color: #898989;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#raceSelection, #spacer, #characterSummary {
+  display: inline;
+  float: left;
 }
 
 </style>
@@ -57,28 +120,253 @@ body {
 <body>
 
 <div class="sidenav">
-  <a onclick="replaceContentInContainer('characterBuilder', 'raceSelection')">Race</a>
-  <a href="#services">Class</a>
-  <a href="#clients">Ability Scores</a>
-  <a href="#contact">Prepared Spells</a>
-  <a href="#contact">Flavour Text</a>
+  <a onclick="replaceContentInContainer('default', 'raceSelection')">Race</a>
+  <a onclick="replaceContentInContainer('default', 'classSelection')">Class</a>
+  <a onclick="replaceContentInContainer('default', 'abilitySelection')">Ability Scores</a>
+  <a onclick="replaceContentInContainer('default', 'spellsSelection')">Prepared Spells</a>
+  <a onclick="replaceContentInContainer('default', 'flavourSelection')">Flavour Text</a>
 </div>
 
 <div class="main">
-  <div class="secondary" id="characterBuilder"> secondary </div>
-  <div class="secondary" style="float: right;" id="characterSummary">testing</div>
+  <div class="leftBox" id="default"></div>
+  <div class="leftBox" style="float: right;" id="characterSummary">
+    <div>symbol</div>
+    <br>
+    Race 
+    <br>
+    stats
+    <br>
+    def
+    <br>
+    cantrip
+    <div></div>
+    <br>
+    actions
+    <div></div>
+    <br>
+    Proficiencies
+    <div>
+      Weapons: <br>
+      Armour: <br>
+      Skills: <br>
+    </div>
+  </div>
 </div>
 
-<div class="secondary" id="raceSelection" style="display:none"> spacer here 
-  <button>testing</button>
+<div class="leftBox" id="raceSelection" style="display:none"> 
+  <div style="text-align:center">
+    <div class="charBox" id="elfBox" onclick="showRaceFeatures(this.id)">Elf</div>
+    <div class="charBox" id="tieflingBox" onclick="showRaceFeatures(this.id)">Tiefling</div>
+    <div class="charBox" id="drowBox" onclick="showRaceFeatures(this.id)">Drow</div>
+    <div class="charBox" id="humanBox" onclick="showRaceFeatures(this.id)">Human</div>
+    <div class="charBox" id="githBox" onclick="showRaceFeatures(this.id)">Githyanki</div>
+    <div class="charBox" id="dwarfBox" onclick="showRaceFeatures(this.id)">Dwarf</div>
+    <div class="charBox" id="half-elfBox" onclick="showRaceFeatures(this.id)">Half-Elf</div>
+    <div class="charBox" id="halflingBox" onclick="showRaceFeatures(this.id)">Halfling</div>
+    <div class="charBox" id="gnomeBox" onclick="showRaceFeatures(this.id)">Gnome</div>
+    <div class="charBox" id="dragonBox" onclick="showRaceFeatures(this.id)">Dragonborn</div>
+    <div class="charBox" id="halforcBox" onclick="showRaceFeatures(this.id)">Half-Orc</div>
+
+    <h2 class="raceName">Species</h2>
+    <div>description of race</div>
+
+    <br>
+
+    <div id="raceFeaturesContainer" style="margin: auto; width: 50%; border: 2px solid rgb(57, 156, 57); border-radius: 10px;">
+      Race Features
+    </div>
+    
+  </div>
+  <div id="subraceModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="subraceTitle">Choose Subrace</h2>
+      <div id="subraceButtons"></div>
+    </div>
+  </div>
+  
 </div>
-   
+<div class="leftBox" id="classSelection" style="display:none"> spacer here 
+  <button>testing1</button>
+</div>
+<div class="leftBox" id="abilitySelection" style="display:none"> spacer here 
+  <button>testing2</button>
+</div>
+<div class="leftBox" id="spellsSelection" style="display:none"> spacer here 
+  <button>testing3</button>
+</div>
+<div class="leftBox" id="flavourSelection" style="display:none"> spacer here 
+  <button>testing4</button>
+</div>
+
 </body>
-</html> 
+</html>
 
 <script>
+  // Race info
+  const subraceData = {
+    'High Elf': {  description: 'High Elf description', numFeatures: 4 },
+    'Wood Elf': {  description: 'Wood Elf description', numFeatures: 3 },
+    'Drow Elf': {  description: 'Drow Elf description', numFeatures: 4 },
+    'Hill Dwarf': {  description: 'Hill Dwarf description', numFeatures: 2 },
+    'Mountain Dwarf': {  description: 'Mountain Dwarf description', numFeatures: 2 },
+    'Lightfoot Halfling': {  description: 'Lightfoot Halfling description', numFeatures: 2 },
+    'Stout Halfling': {  description: 'Stout Halfling description', numFeatures: 2 },
+    'Forest Gnome': {  description: 'Forest Gnome description', numFeatures: 3 },
+    'Rock Gnome': {  description: 'Rock Gnome description', numFeatures: 3 },
+    'High Half-Elf': {  description: 'High Half-Elf description', numFeatures: 4 },
+    'Wood Half-Elf': {  description: 'Wood Half-Elf description', numFeatures: 2 },
+    'Drow Half-Elf': {  description: 'Drow Half-Elf description', numFeatures: 3 }
+  };
+  window.onload = docReady();
+  
+  function docReady(){
+    replaceContentInContainer('default', 'raceSelection');
+    showRaceFeatures('elfBox');
+  }
+
   function replaceContentInContainer(target, source) {
     document.getElementById(target).innerHTML = document.getElementById(source).innerHTML;
-    console.log("testing")
   }
-</script>
+  
+  function showRaceFeatures(raceId) {
+    // Clear previous race features
+    document.getElementById('raceFeaturesContainer').innerHTML = '';
+  
+    let description = '';
+    let numFeatures = 0;
+    let raceFeatureText = '';
+  
+    // Set description and number of features based on race
+    switch(raceId) {
+      case 'elfBox':
+        description = 'elf text';
+        break;
+      case 'tieflingBox':
+        description = 'elf text';
+        break;
+      case 'drowBox':
+        description = 'elf text';
+        break;
+      case 'humanBox':
+        description = 'elf text';
+        break;
+      case 'githBox':
+        description = 'elf text';
+        break;
+      case 'dwarfBox':
+        description = 'elf text';
+        break;
+      case 'half-elfBox':
+        description = 'tester';
+        break;
+      case 'halflingBox':
+        description = 'elf text';
+        break;
+      case 'gnomeBox':
+        description = 'elf text';
+        break;
+      case 'dragonBox':
+        description = 'githyanki text';
+        break;
+      case 'halforcBox':
+        description = 'githyanki text';
+        break;
+    }
+  
+    // Update race description
+    document.querySelector('.raceName').nextElementSibling.textContent = description;
+  
+    // Generate race feature boxes
+    for (let i = 0; i < numFeatures; i++) {
+      const raceFeaturesBox = document.createElement('div');
+      raceFeaturesBox.className = 'raceFeaturesBox';
+      raceFeaturesBox.textContent = `${ raceFeatureText} ${i + 1}`;
+      document.getElementById('raceFeaturesContainer').appendChild(raceFeaturesBox);
+    }
+  
+    // Update race name
+    updateRaceName(raceId.replace('Box', '').charAt(0).toUpperCase() + raceId.replace('Box', '').slice(1));
+    // Open subrace modal
+    openSubrace(raceId.replace('Box', ''));
+  }
+
+  function openSubrace(selectedRace) {
+    var modal = document.getElementById("subraceModal");
+    var span = document.getElementsByClassName("close")[0];
+    var title = document.getElementById("subraceTitle");
+    var buttonContainer = document.getElementById("subraceButtons");
+    var leftBox = document.getElementById("default");
+
+    // Clear previous buttons and open modal
+    buttonContainer.innerHTML = '';
+    modal.style.display = "block !important";
+    console.log(selectedRace, "subrace opened")
+
+    // Set title and buttons based on selected race
+    title.textContent = `Choose ${ selectedRace} Subrace`;
+
+    let subraces;
+    switch(selectedRace.toLowerCase()) {
+        case 'elf':
+            subraces = ['High Elf', 'Wood Elf', 'Drow Elf'];
+            break;
+        case 'dwarf':
+            subraces = ['Hill Dwarf', 'Mountain Dwarf'];
+            break;
+        case 'half-elf':
+            subraces = ['High Half-Elf', 'Wood Half-Elf', 'Drow Half-Elf'];
+            break;
+        case 'halfling':
+            subraces = ['Lightfoot Halfling', 'Stout Halfling'];
+            break;
+        case 'gnome':
+            subraces = ['Forest Gnome', 'Rock Gnome'];
+            break;
+        default:
+            subraces = [];
+    }
+
+    subraces.forEach(subrace => {
+        let button = document.createElement('button');
+        button.textContent = subrace;
+        button.className = 'modal-button';
+        button.onclick = function() {
+            updateRaceName(subrace);
+            console.log(`Selected subrace: ${ subrace}`);
+            modal.style.display = "none";
+        };
+        buttonContainer.appendChild(button);
+    });
+
+    if (subraces.length > 0) {
+        // Position the modal next to the leftBox
+        var rect = leftBox.getBoundingClientRect();
+        modal.style.left = (rect.right + 10) + 'px';
+        modal.style.top = rect.top + 'px';
+        modal.style.display = "block";
+    }
+  }
+
+  function updateRaceName(name) {
+    document.querySelector('.raceName').textContent = name;
+    
+    // Update description and features if it's a subrace
+    if (subraceData[name]) {
+        document.querySelector('.raceName').nextElementSibling.textContent = subraceData[name].description;
+        updateRaceFeatures(subraceData[name].numFeatures);
+    }
+}
+
+function updateRaceFeatures(numFeatures) {
+    const raceFeaturesContainer = document.getElementById('raceFeaturesContainer');
+    raceFeaturesContainer.innerHTML = ''; // Clear existing features
+    
+    for (let i = 0; i < numFeatures; i++) {
+        const raceFeaturesBox = document.createElement('div');
+        raceFeaturesBox.className = 'raceFeaturesBox';
+        raceFeaturesBox.textContent = `Feature ${ i + 1}`;
+        raceFeaturesContainer.appendChild(raceFeaturesBox);
+    }
+}
+  </script>

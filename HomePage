@@ -2,125 +2,497 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  font-family: "Lato", sans-serif;
-}
+  <style>
+  body {
+    font-family: "Lato", sans-serif;
+  }
 
-.sidenav {
-  height: 100%;
-  width: 160px;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  background-color: #ff464629;
-  overflow-x: hidden;
-  padding-top: 20px;
-}
+  .sidenav {
+    height: 100%;
+    width: 160px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #ff464629;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
 
-.sidenav a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #000000;
-  display: block;
-}
+  .sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #000000;
+    display: block;
+  }
 
-.sidenav a:hover {
-  color: #cd2424;
-}
+  .sidenav a:hover {
+    color: #cd2424;
+  }
 
-.main {
-  margin-left: 160px; /* Same as the width of the sidenav */
-  font-size: 28px; /* Increased text to enable scrolling */
-  padding: 0px 10px;
-}
+  .main {
+    margin-left: 160px; /* Same as the width of the sidenav */
+    font-size: 28px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
+  }
 
-.leftBox {
-  display: inline-block;
-  width: 30%;
-  height: max-content;
-  background-color: rgb(239, 239, 239);
-  border: 5px solid green;
-  border-radius: 10px;
-  padding: 50px;
-  margin: 20px;
-}
+  .leftBox {
+    display: inline-block;
+    width: 30%;
+    height: max-content;
+    background-color: rgb(239, 239, 239);
+    border: 5px solid green;
+    border-radius: 10px;
+    padding: 50px;
+    margin: 20px;
+  }
 
-.charBox {
-  width: 25%;
-  aspect-ratio: 1 / 1;
-  display: inline-block;
-  border-radius: 10px;
-  border: 2px solid rgb(57, 156, 57);
-  margin: 5px;
-  cursor: pointer; /* Add cursor pointer for usability */
-  font-size: medium;
-}
+  .charBox {
+    position: relative;
+    width: calc(25% - 10px); /* 25% width minus margins */
+    padding-bottom: calc(25% - 10px); /* Makes it square */
+    display: inline-block;
+    border-radius: 10px;
+    border: 2px solid rgb(57, 156, 57);
+    margin: 5px;
+    cursor: pointer;
+    font-size: medium;
+    box-sizing: border-box;
+    vertical-align: top;
+  }
 
-.raceFeaturesBox {
-  display: inline-block;
-  width: 15%;
-  aspect-ratio: 1 / 1;
-  border-radius: 10px;
-  border: 1px solid rgb(57, 156, 57);
-  margin: 5px;
-}
-
-.modal {
-    display: none;
+  .charBox::before {
+    content: attr(id);
     position: absolute;
-    z-index: 1000;
-    border: 1px solid #888;
-    border-radius: 5px;
-    padding: 20px;
-    width: 200px;
+    top: 1rem;
+    left: 0;
+    right: 0;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+  }
 
-.modal-button {
-  margin: 5px;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-}
 
-.modal-button:hover {
-  background-color: #898989;
-}
+  .classBox {
+    width: 25%;
+    aspect-ratio: 1 / 1;
+    display: inline-block;
+    border-radius: 10px;
+    border: 2px solid rgb(57, 156, 57);
+    margin: 5px;
+    cursor: pointer; /* Add cursor pointer for usability */
+    font-size: medium;
+  }
 
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
+  .featuresBox {
+    text-align: center;
+    display: inline-block;
+    width: 15%;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    margin: 5px;
+  }
 
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
+  .modal {
+      display: none;
+      position: absolute;
+      z-index: 1000;
+      border: 1px solid #888;
+      border-radius: 5px;
+      padding: 20px;
+      width: 200px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
 
-#raceSelection, #spacer, #characterSummary {
-  display: inline;
-  float: left;
-}
+  .modal-button {
+    margin: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
 
-</style>
+  .modal-button:hover {
+    background-color: #898989;
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  #speciesSelection, #spacer, #characterSummary {
+    display: inline;
+    float: left;
+  }
+
+  </style>
+
+  <script>
+    // Species info
+    const subspeciesData = {
+      'High Elf': {  description: 'High Elf description', numFeatures: 4 },
+      'Wood Elf': {  description: 'Wood Elf description', numFeatures: 3 },
+      'Drow Elf': {  description: 'Drow Elf description', numFeatures: 4 },
+      'Hill Dwarf': {  description: 'Hill Dwarf description', numFeatures: 2 },
+      'Mountain Dwarf': {  description: 'Mountain Dwarf description', numFeatures: 2 },
+      'Lightfoot Halfling': {  description: 'Lightfoot Halfling description', numFeatures: 2 },
+      'Stout Halfling': {  description: 'Stout Halfling description', numFeatures: 2 },
+      'Forest Gnome': {  description: 'Forest Gnome description', numFeatures: 3 },
+      'Rock Gnome': {  description: 'Rock Gnome description', numFeatures: 3 },
+      'High Half-Elf': {  description: 'High Half-Elf description', numFeatures: 4 },
+      'Wood Half-Elf': {  description: 'Wood Half-Elf description', numFeatures: 2 },
+      'Drow Half-Elf': {  description: 'Drow Half-Elf description', numFeatures: 3 }
+    };
+
+    const classData = {
+      'Barbarian': {  description: 'A fierce warrior of primitive background who can enter a battle rage', numFeatures: 2 },
+      'Bard': {  description: 'An inspiring magician whose power echoes the music of creation', numFeatures: 3 },
+      'Cleric': {  description: 'A priestly champion who wields divine magic in service of a higher power', numFeatures: 3 },
+      'Druid': {  description: 'A priest of the Old Faith, wielding the powers of nature and adopting animal forms', numFeatures: 2 },
+      'Fighter': {  description: 'A master of martial combat, skilled with a variety of weapons and armor', numFeatures: 3 },
+      'Monk': {  description: 'A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection', numFeatures: 3 },
+      'Paladin': {  description: 'A holy warrior bound to a sacred oath', numFeatures: 2 },
+      'Ranger': {  description: 'A warrior who combats threats on the edges of civilization', numFeatures: 3 },
+      'Rogue': {  description: 'A scoundrel who uses stealth and trickery to overcome obstacles and enemies', numFeatures: 3 },
+      'Sorcerer': {  description: 'A spellcaster who draws on inherent magic from a gift or bloodline', numFeatures: 2 },
+      'Warlock': {  description: 'A wielder of magic that is derived from a bargain with an extraplanar entity', numFeatures: 2 },
+      'Wizard': {  description: 'A scholarly magic-user capable of manipulating the structures of reality', numFeatures: 2 }
+    };
+
+    let character = {
+        species: '',
+        subspecies: '',
+        class: '',
+        abilities: {},
+        spells: [],
+        flavour: ''
+    };
+    window.onload = docReady();
+    
+    function docReady(){
+    }
+
+    function replaceContentInContainer(target, source) {
+      if (source == "homepage") {
+        document.getElementById('characterSummary').style.display = 'none';
+        document.getElementById(target).innerHTML = document.getElementById(source).innerHTML;
+      }
+      else {
+        document.getElementById('characterSummary').style.display = 'block';
+        document.getElementById(target).innerHTML = document.getElementById(source).innerHTML;
+      }
+      
+    }
+    
+    // shows default species box and set's it up for user interaction
+    function showSpeciesFeatures(speciesId) {
+      document.getElementById('speciesTextBoxes').style.display = 'block'
+      // Remove 'Box' from the end of the id
+      let species = speciesId.replace('Box', '');
+
+      // Clear previous species features
+      document.getElementById('speciesFeaturesContainer').innerHTML = '';
+    
+      let description = '';
+      let numFeatures = 0;
+      let speciesFeatureText = '';
+    
+      // Set description and number of features based on species
+      switch(speciesId) {
+        case 'elfBox':
+          description = 'elf text';
+          break;
+        case 'tieflingBox':
+          description = 'elf text';
+          break;
+        case 'drowBox':
+          description = 'elf text';
+          break;
+        case 'humanBox':
+          description = 'elf text';
+          break;
+        case 'githBox':
+          description = 'elf text';
+          break;
+        case 'dwarfBox':
+          description = 'elf text';
+          break;
+        case 'half-elfBox':
+          description = 'tester';
+          break;
+        case 'halflingBox':
+          description = 'elf text';
+          break;
+        case 'gnomeBox':
+          description = 'elf text';
+          break;
+        case 'dragonBox':
+          description = 'githyanki text';
+          break;
+        case 'halforcBox':
+          description = 'githyanki text';
+          break;
+      }
+    
+      // Update species description
+      document.querySelector('.speciesName').nextElementSibling.textContent = description;
+
+      // Update character object
+      character.species = speciesId.replace('Box', '');
+      character.subspecies = ''; // Reset subspecies when a new species is selected
+      updateCharacterSummary();
+    
+      // Generate species feature boxes
+      for (let i = 0; i < numFeatures; i++) {
+        const speciesFeaturesBox = document.createElement('div');
+        speciesFeaturesBox.speciesName = 'speciesFeaturesBox';
+        speciesFeaturesBox.textContent = `${ speciesFeatureText} ${i + 1}`;
+        document.getElementById('speciesFeaturesContainer').appendChild(speciesFeaturesBox);
+      }
+    
+      // Update species name
+      updateSpeciesName(speciesId.replace('Box', '').charAt(0).toUpperCase() + speciesId.replace('Box', '').slice(1));
+      // Open subspecies modal
+      openSubspecies(speciesId.replace('Box', ''));
+    }
+
+    // modal for subspecies
+    function openSubspecies(selectedSpecies) {
+      var modal = document.getElementById("subspeciesModal");
+      var span = document.getElementsByClassName("close")[0];
+      var title = document.getElementById("subspeciesTitle");
+      var buttonContainer = document.getElementById("subspeciesButtons");
+      var leftBox = document.getElementById("default");
+
+      // Clear previous buttons and open modal
+      buttonContainer.innerHTML = '';
+      modal.style.display = "block !important";
+      console.log(selectedSpecies, "subspecies opened")
+
+      // Set title and buttons based on selected species
+      title.textContent = `Choose ${ selectedSpecies} Subspecies`;
+
+      let subspeciess;
+      switch(selectedSpecies.toLowerCase()) {
+          case 'elf':
+              subspeciess = ['High Elf', 'Wood Elf', 'Drow Elf'];
+              break;
+          case 'dwarf':
+              subspeciess = ['Hill Dwarf', 'Mountain Dwarf'];
+              break;
+          case 'half-elf':
+              subspeciess = ['High Half-Elf', 'Wood Half-Elf', 'Drow Half-Elf'];
+              break;
+          case 'halfling':
+              subspeciess = ['Lightfoot Halfling', 'Stout Halfling'];
+              break;
+          case 'gnome':
+              subspeciess = ['Forest Gnome', 'Rock Gnome'];
+              break;
+          default:
+              subspeciess = [];
+      }
+
+      subspeciess.forEach(subspecies => {
+          let button = document.createElement('button');
+          button.textContent = subspecies;
+          button.className = 'modal-button';
+          button.onclick = function() {
+              updateSpeciesName(subspecies);
+              console.log(`Selected subspecies: ${ subspecies}`);
+              modal.style.display = "none";
+          };
+          buttonContainer.appendChild(button);
+      });
+
+      if (subspeciess.length > 0) {
+          // Position the modal next to the leftBox
+          var rect = leftBox.getBoundingClientRect();
+          modal.style.left = (rect.right + 10) + 'px';
+          modal.style.top = rect.top + 'px';
+          modal.style.display = "block";
+      }
+    }
+
+    // updates name for species
+    function updateSpeciesName(name) {
+      document.querySelector('.speciesName').textContent = name;
+      
+      // Update description and features if it's a subspecies
+      if (subspeciesData[name]) {
+        document.querySelector('.speciesName').nextElementSibling.textContent = subspeciesData[name].description;
+        updateFeatures(subspeciesData[name].numFeatures, name.toLowerCase().replace(' ', '-'), 'speciesFeaturesContainer');
+      }
+
+      // Update character object
+      if (subspeciesData[name]) {
+          character.subspecies = name;
+      } else {
+          character.species = name;
+          character.subspecies = '';
+      }
+      updateCharacterSummary();
+    }
+
+    // updates class info
+    function updateClass(charClass) {
+      document.getElementById("classTextBoxes").style.display = "block"
+      document.querySelector('.className').textContent = charClass;
+      
+      // Update description and features if it's a subspecies
+      if (classData[charClass]) {
+        document.querySelector('.className').nextElementSibling.textContent = classData[charClass].description;
+        updateFeatures(classData[charClass].numFeatures, charClass.toLowerCase().replace(' ', '-'), 'classFeaturesContainer');
+      }
+
+      // // Update character object
+      character.class = charClass;
+      updateCharacterSummary();
+    }
+
+    // updates features based on parameters
+    function updateFeatures(numFeatures, thing, containerID) {
+      console.log(thing)
+      const featuresContainer = document.getElementById(containerID);
+      featuresContainer.innerHTML = ''; // Clear existing features
+      
+      // Extract the base species name (text after the hyphen)
+      const basething = thing.includes('-') ? thing.split('-')[1].toLowerCase() : thing.toLowerCase();
+      
+      for (let i = 0; i < numFeatures; i++) {
+        const featuresBox = document.createElement('div');
+        featuresBox.className = 'featuresBox';
+        
+        const img = document.createElement('img');
+        if (thing.includes('-')) {
+          img.src = i === 0 ? `${ basething}-base.jpg` : `${thing}-${i}.jpg`;
+          console.log("test",img.src)
+        }
+        else {
+          img.src = `${thing}-${i}.jpg`;
+        }
+        img.alt = `${ thing} feature ${i + 1}`;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.borderRadius = 'inherit';
+        
+        featuresBox.appendChild(img);
+        featuresContainer.appendChild(featuresBox);
+      }
+    }
+  
+    // update char summary box (right side)
+    function updateCharacterSummary() {
+      const element = document.getElementById('charSummary');
+      let summaryHTML = '<h2>Character Summary</h2>';
+      
+      if (character.subspecies) {
+        element.textContent += "Species:" + character.subspecies;
+        element.style.display = "block";
+      }
+      if (character.class) {
+        element.textContent += "Class:" + character.class;
+        element.style.display = "block";
+      }
+      if (Object.keys(character.abilities).length > 0) {
+        for (let ability in character.abilities) {
+          const score = document.getElementById(`${ ability}Score`).textContent;
+          const modifier = document.getElementById(`${ ability}Mod`).textContent;
+          const summaryAbilityElement = document.getElementById(`summary${ ability.toUpperCase()}`);
+          if (summaryAbilityElement) {
+            summaryAbilityElement.textContent = `${ score} (${modifier})`;
+          } else {
+            console.error(`Element with id summary${ ability.toUpperCase()} not found`);
+          }
+        }
+      }
+      // if (character.spells.length > 0) {
+      //     summaryHTML += '<p>Spells:</p><ul>';
+      //     character.spells.forEach(spell => {
+      //         summaryHTML += `<li>${ spell}</li>`;
+      //     });
+      //     summaryHTML += '</ul>';
+      // }
+      // if (character.flavour) {
+      //     summaryHTML += `<p>Flavour Text: ${ character.flavour}</p>`;
+      // }
+    }
+  
+    const abilities = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+    let scores = {str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8};
+    let pointsSpent = 0;
+
+    // display for ability score
+    function updateDisplay() {
+      abilities.forEach(ability => {
+        const score = scores[ability];
+        const modifier = Math.floor((score - 10) / 2);
+        const modifierString = modifier >= 0 ? `+${ modifier}` : `${modifier}`;
+        
+        // Update ability selection area
+        document.getElementById(`${ ability}Score`).textContent = score;
+        document.getElementById(`${ ability}Mod`).textContent = modifierString;
+        
+      });
+      document.getElementById('pointsRemaining').textContent = 27 - pointsSpent;
+      
+      // Update character object
+      character.abilities = { ...scores};
+      updateCharacterSummary();
+    }
+
+    function getPointCost(score) {
+      if (score < 13) return 1;
+      if (score < 15) return 2;
+      return 3;
+    }
+
+    function changeScore(ability, change) {
+      const currentScore = scores[ability];
+      const newScore = currentScore + change;
+      
+      if (newScore < 8 || newScore > 15) return;
+      
+      const currentCost = getPointCost(currentScore);
+      const newCost = getPointCost(newScore);
+      const pointChange = change > 0 ? newCost : -currentCost;
+      
+      if (pointsSpent + pointChange > 27) return;
+      
+      scores[ability] = newScore;
+      pointsSpent += pointChange;
+      
+      updateDisplay();
+    }
+
+    function resetScores() {
+      abilities.forEach(ability => {
+        scores[ability] = 8;
+      });
+      pointsSpent = 0;
+      updateDisplay();
+    }
+  </script>
 </head>
 <body>
-
 <div class="sidenav">
-  <a onclick="replaceContentInContainer('default', 'raceSelection')">Race</a>
+  <a onclick="replaceContentInContainer('default', 'homepage')">Home</a>
+  <a onclick="replaceContentInContainer('default', 'speciesSelection')">Species</a>
   <a onclick="replaceContentInContainer('default', 'classSelection')">Class</a>
   <a onclick="replaceContentInContainer('default', 'abilitySelection')">Ability Scores</a>
   <a onclick="replaceContentInContainer('default', 'spellsSelection')">Prepared Spells</a>
@@ -128,73 +500,203 @@ body {
 </div>
 
 <div class="main">
-  <div class="leftBox" id="default"></div>
-  <div class="leftBox" style="float: right;" id="characterSummary">
-    <div>symbol</div>
-    <br>
-    Race 
-    <br>
-    stats
-    <br>
-    def
-    <br>
-    cantrip
-    <div></div>
-    <br>
-    actions
-    <div></div>
-    <br>
-    Proficiencies
-    <div>
-      Weapons: <br>
-      Armour: <br>
-      Skills: <br>
+  <div class="leftBox" id="default">
+    <div style="text-align:center">
+      <h2>Welcome</h2>
+      <br>
+      Welcome to Mimi's D&D character builder, based off Dungeons and Dragons 5e. This project was inspired by the baldurs Gate 3 UI and Character Creation menu. For more information or inquiries, please visit []!
     </div>
   </div>
-</div>
-
-<div class="leftBox" id="raceSelection" style="display:none"> 
-  <div style="text-align:center">
-    <div class="charBox" id="elfBox" onclick="showRaceFeatures(this.id)">Elf</div>
-    <div class="charBox" id="tieflingBox" onclick="showRaceFeatures(this.id)">Tiefling</div>
-    <div class="charBox" id="drowBox" onclick="showRaceFeatures(this.id)">Drow</div>
-    <div class="charBox" id="humanBox" onclick="showRaceFeatures(this.id)">Human</div>
-    <div class="charBox" id="githBox" onclick="showRaceFeatures(this.id)">Githyanki</div>
-    <div class="charBox" id="dwarfBox" onclick="showRaceFeatures(this.id)">Dwarf</div>
-    <div class="charBox" id="half-elfBox" onclick="showRaceFeatures(this.id)">Half-Elf</div>
-    <div class="charBox" id="halflingBox" onclick="showRaceFeatures(this.id)">Halfling</div>
-    <div class="charBox" id="gnomeBox" onclick="showRaceFeatures(this.id)">Gnome</div>
-    <div class="charBox" id="dragonBox" onclick="showRaceFeatures(this.id)">Dragonborn</div>
-    <div class="charBox" id="halforcBox" onclick="showRaceFeatures(this.id)">Half-Orc</div>
-
-    <h2 class="raceName">Species</h2>
-    <div>description of race</div>
-
-    <br>
-
-    <div id="raceFeaturesContainer" style="margin: auto; width: 50%; border: 2px solid rgb(57, 156, 57); border-radius: 10px;">
-      Race Features
+  <div class="leftBox" style="float: right; display:none;" id="characterSummary">
+    <h2>Character Summary</h2>
+    <div id="charSummary" style="display:none;">
+      <div>symbol</div>
+      <br>
+      Species 
+      <br>
+      <div id="summaryAbilityScores">
+        <h4>Ability Scores</h4>
+        <div class="row col-12">
+          <div class="col-2">STR:</div><div id="summarySTR" class="col-2">placeholder</div>
+          <div class="col-2">DEX:</div><div id="summaryDEX" class="col-2">placeholder</div>
+          <div class="col-2">CON:</div><div id="summaryCON" class="col-2">placeholder</div>
+          <div class="col-2">INT:</div><div id="summaryINT" class="col-2">placeholder</div>
+          <div class="col-2">WIS:</div><div id="summaryWIS" class="col-2">placeholder</div>
+          <div class="col-2">CHA:</div><div id="summaryCHA" class="col-2">placeholder</div>
+        </div>
+      </div>
+      <br>
+      def
+      <br>
+      cantrip
+      <div></div>
+      <br>
+      actions
+      <div></div>
+      <br>
+      Proficiencies
+      <div>
+        Weapons: <br>
+        Armour: <br>
+        Skills: <br>
+      </div>
     </div>
     
   </div>
-  <div id="subraceModal" class="modal">
+</div>
+
+<div class="leftBox" id="homepage" style="display:none">
+  <div style="text-align:center">
+    <h2>Welcome</h2>
+    <br>
+    Welcome to Mimi's D&D character builder, based off Dungeons and Dragons 5e. This project was inspired by the baldurs Gate 3 UI and Character Creation menu. For more information or inquiries, please visit []!
+  </div>
+</div>
+
+<div class="leftBox" id="speciesSelection" style="display:none"> 
+  <div style="text-align:center">
+    <div class="charBox" id="Elf" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Tiefling" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Drow" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Human" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Githyanki" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Dwarf" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Half-Elf" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Halfling" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Gnome" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Dragonborn" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+    <div class="charBox" id="Half-Orc" onclick="showSpeciesFeatures(this.id + 'Box')"></div>
+  </div>
+  <div style="text-align:center; display:none;" id="speciesTextBoxes">
+    <h2 class="speciesName">Species</h2>
+      <div>description of species</div>
+
+      <br>
+
+      <div id="speciesFeaturesContainer" style="margin: auto; width: 50%; border: 2px solid rgb(57, 156, 57); border-radius: 10px;">
+        Species Features
+      </div>
+  </div>
+
+  <div id="subspeciesModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
-      <h2 id="subraceTitle">Choose Subrace</h2>
-      <div id="subraceButtons"></div>
+      <h2 id="subspeciesTitle">Choose Subspecies</h2>
+      <div id="subspeciesButtons"></div>
     </div>
   </div>
-  
 </div>
-<div class="leftBox" id="classSelection" style="display:none"> spacer here 
-  <button>testing1</button>
+
+<div class="leftBox" id="classSelection" style="display:none"> 
+  <div style="text-align:center">
+    <div class="classBox" id="barbarianBox" onclick="updateClass(this.textContent)">Barbarian</div>
+    <div class="classBox" id="bardBox" onclick="updateClass(this.textContent)">Bard</div>
+    <div class="classBox" id="clericBox" onclick="updateClass(this.textContent)">Cleric</div>
+    <div class="classBox" id="druidBox" onclick="updateClass(this.textContent)">Druid</div>
+    <div class="classBox" id="warriorBox" onclick="updateClass(this.textContent)">Warrior</div>
+    <div class="classBox" id="monkBox" onclick="updateClass(this.textContent)">Monk</div>
+    <div class="classBox" id="paladinBox" onclick="updateClass(this.textContent)">Paladin</div>
+    <div class="classBox" id="rangerBox" onclick="updateClass(this.textContent)">Ranger</div>
+    <div class="classBox" id="rogueBox" onclick="updateClass(this.textContent)">Rogue</div>
+    <div class="classBox" id="sorcererBox" onclick="updateClass(this.textContent)">Sorcerer</div>
+    <div class="classBox" id="warlockBox" onclick="updateClass(this.textContent)">Warlock</div>
+    <div class="classBox" id="wizardBox" onclick="updateClass(this.textContent)">Wizard</div>    
+  </div>
+  <div style="text-align:center; display:none;" id="classTextBoxes">
+    <h2 class="className">Class</h2>
+      <div>description of class</div>
+
+      <br>
+
+      <div id="classFeaturesContainer" style="margin: auto; width: 50%; border: 2px solid rgb(57, 156, 57); border-radius: 10px;">
+        Class Features
+      </div>
+  </div>
 </div>
-<div class="leftBox" id="abilitySelection" style="display:none"> spacer here 
-  <button>testing2</button>
+
+<div class="leftBox" id="abilitySelection" style="display:none">
+  <h2>Ability Score Selection</h2>
+  <p>Distribute 27 points among your abilities. Scores can range from 8 to 15.</p>
+  <button id="resetScores" class="btn mt-3" onclick="resetScores()">Reset Scores</button>
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Ability</th>
+            <th>Score</th>
+            <th>Modifier</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Strength</td>
+            <td id="strScore">8</td>
+            <td id="strMod">-1</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="changeScore('str', 1)">+</button>
+              <button class="btn btn-sm btn-secondary" onclick="changeScore('str', -1)">-</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Dexterity</td>
+            <td id="dexScore">8</td>
+            <td id="dexMod">-1</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="changeScore('dex', 1)">+</button>
+              <button class="btn btn-sm btn-secondary" onclick="changeScore('dex', -1)">-</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Constitution</td>
+            <td id="conScore">8</td>
+            <td id="conMod">-1</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="changeScore('con', 1)">+</button>
+              <button class="btn btn-sm btn-secondary" onclick="changeScore('con', -1)">-</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Intelligence</td>
+            <td id="intScore">8</td>
+            <td id="intMod">-1</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="changeScore('int', 1)">+</button>
+              <button class="btn btn-sm btn-secondary" onclick="changeScore('int', -1)">-</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Wisdom</td>
+            <td id="wisScore">8</td>
+            <td id="wisMod">-1</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="changeScore('wis', 1)">+</button>
+              <button class="btn btn-sm btn-secondary" onclick="changeScore('wis', -1)">-</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Charisma</td>
+            <td id="chaScore">8</td>
+            <td id="chaMod">-1</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="changeScore('cha', 1)">+</button>
+              <button class="btn btn-sm btn-secondary" onclick="changeScore('cha', -1)">-</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <h4>Points Remaining: <span id="pointsRemaining">27</span></h4>
+    </div>
+  </div>
 </div>
+
 <div class="leftBox" id="spellsSelection" style="display:none"> spacer here 
   <button>testing3</button>
 </div>
+
 <div class="leftBox" id="flavourSelection" style="display:none"> spacer here 
   <button>testing4</button>
 </div>
@@ -202,171 +704,4 @@ body {
 </body>
 </html>
 
-<script>
-  // Race info
-  const subraceData = {
-    'High Elf': {  description: 'High Elf description', numFeatures: 4 },
-    'Wood Elf': {  description: 'Wood Elf description', numFeatures: 3 },
-    'Drow Elf': {  description: 'Drow Elf description', numFeatures: 4 },
-    'Hill Dwarf': {  description: 'Hill Dwarf description', numFeatures: 2 },
-    'Mountain Dwarf': {  description: 'Mountain Dwarf description', numFeatures: 2 },
-    'Lightfoot Halfling': {  description: 'Lightfoot Halfling description', numFeatures: 2 },
-    'Stout Halfling': {  description: 'Stout Halfling description', numFeatures: 2 },
-    'Forest Gnome': {  description: 'Forest Gnome description', numFeatures: 3 },
-    'Rock Gnome': {  description: 'Rock Gnome description', numFeatures: 3 },
-    'High Half-Elf': {  description: 'High Half-Elf description', numFeatures: 4 },
-    'Wood Half-Elf': {  description: 'Wood Half-Elf description', numFeatures: 2 },
-    'Drow Half-Elf': {  description: 'Drow Half-Elf description', numFeatures: 3 }
-  };
-  window.onload = docReady();
-  
-  function docReady(){
-    replaceContentInContainer('default', 'raceSelection');
-    showRaceFeatures('elfBox');
-  }
 
-  function replaceContentInContainer(target, source) {
-    document.getElementById(target).innerHTML = document.getElementById(source).innerHTML;
-  }
-  
-  function showRaceFeatures(raceId) {
-    // Clear previous race features
-    document.getElementById('raceFeaturesContainer').innerHTML = '';
-  
-    let description = '';
-    let numFeatures = 0;
-    let raceFeatureText = '';
-  
-    // Set description and number of features based on race
-    switch(raceId) {
-      case 'elfBox':
-        description = 'elf text';
-        break;
-      case 'tieflingBox':
-        description = 'elf text';
-        break;
-      case 'drowBox':
-        description = 'elf text';
-        break;
-      case 'humanBox':
-        description = 'elf text';
-        break;
-      case 'githBox':
-        description = 'elf text';
-        break;
-      case 'dwarfBox':
-        description = 'elf text';
-        break;
-      case 'half-elfBox':
-        description = 'tester';
-        break;
-      case 'halflingBox':
-        description = 'elf text';
-        break;
-      case 'gnomeBox':
-        description = 'elf text';
-        break;
-      case 'dragonBox':
-        description = 'githyanki text';
-        break;
-      case 'halforcBox':
-        description = 'githyanki text';
-        break;
-    }
-  
-    // Update race description
-    document.querySelector('.raceName').nextElementSibling.textContent = description;
-  
-    // Generate race feature boxes
-    for (let i = 0; i < numFeatures; i++) {
-      const raceFeaturesBox = document.createElement('div');
-      raceFeaturesBox.className = 'raceFeaturesBox';
-      raceFeaturesBox.textContent = `${ raceFeatureText} ${i + 1}`;
-      document.getElementById('raceFeaturesContainer').appendChild(raceFeaturesBox);
-    }
-  
-    // Update race name
-    updateRaceName(raceId.replace('Box', '').charAt(0).toUpperCase() + raceId.replace('Box', '').slice(1));
-    // Open subrace modal
-    openSubrace(raceId.replace('Box', ''));
-  }
-
-  function openSubrace(selectedRace) {
-    var modal = document.getElementById("subraceModal");
-    var span = document.getElementsByClassName("close")[0];
-    var title = document.getElementById("subraceTitle");
-    var buttonContainer = document.getElementById("subraceButtons");
-    var leftBox = document.getElementById("default");
-
-    // Clear previous buttons and open modal
-    buttonContainer.innerHTML = '';
-    modal.style.display = "block !important";
-    console.log(selectedRace, "subrace opened")
-
-    // Set title and buttons based on selected race
-    title.textContent = `Choose ${ selectedRace} Subrace`;
-
-    let subraces;
-    switch(selectedRace.toLowerCase()) {
-        case 'elf':
-            subraces = ['High Elf', 'Wood Elf', 'Drow Elf'];
-            break;
-        case 'dwarf':
-            subraces = ['Hill Dwarf', 'Mountain Dwarf'];
-            break;
-        case 'half-elf':
-            subraces = ['High Half-Elf', 'Wood Half-Elf', 'Drow Half-Elf'];
-            break;
-        case 'halfling':
-            subraces = ['Lightfoot Halfling', 'Stout Halfling'];
-            break;
-        case 'gnome':
-            subraces = ['Forest Gnome', 'Rock Gnome'];
-            break;
-        default:
-            subraces = [];
-    }
-
-    subraces.forEach(subrace => {
-        let button = document.createElement('button');
-        button.textContent = subrace;
-        button.className = 'modal-button';
-        button.onclick = function() {
-            updateRaceName(subrace);
-            console.log(`Selected subrace: ${ subrace}`);
-            modal.style.display = "none";
-        };
-        buttonContainer.appendChild(button);
-    });
-
-    if (subraces.length > 0) {
-        // Position the modal next to the leftBox
-        var rect = leftBox.getBoundingClientRect();
-        modal.style.left = (rect.right + 10) + 'px';
-        modal.style.top = rect.top + 'px';
-        modal.style.display = "block";
-    }
-  }
-
-  function updateRaceName(name) {
-    document.querySelector('.raceName').textContent = name;
-    
-    // Update description and features if it's a subrace
-    if (subraceData[name]) {
-        document.querySelector('.raceName').nextElementSibling.textContent = subraceData[name].description;
-        updateRaceFeatures(subraceData[name].numFeatures);
-    }
-}
-
-function updateRaceFeatures(numFeatures) {
-    const raceFeaturesContainer = document.getElementById('raceFeaturesContainer');
-    raceFeaturesContainer.innerHTML = ''; // Clear existing features
-    
-    for (let i = 0; i < numFeatures; i++) {
-        const raceFeaturesBox = document.createElement('div');
-        raceFeaturesBox.className = 'raceFeaturesBox';
-        raceFeaturesBox.textContent = `Feature ${ i + 1}`;
-        raceFeaturesContainer.appendChild(raceFeaturesBox);
-    }
-}
-  </script>

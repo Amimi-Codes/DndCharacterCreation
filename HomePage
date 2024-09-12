@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
   body {
     font-family: "Lato", sans-serif;
@@ -39,7 +40,7 @@
 
   .leftBox {
     display: inline-block;
-    width: 30%;
+    width: 40%;
     height: max-content;
     background-color: rgb(239, 239, 239);
     border: 5px solid green;
@@ -93,15 +94,13 @@
   }
 
   .modal {
-      display: none;
-      position: absolute;
-      z-index: 1000;
-      border: 1px solid #888;
-      border-radius: 5px;
-      padding: 20px;
-      width: 200px;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    left:45%;
+    display: none;
+    position: absolute;
+    border-radius: 5px;
+    padding: 20px;
+    width: 15%;
+    text-align: center;
   }
 
   .modal-button {
@@ -110,28 +109,13 @@
     font-size: 14px;
     cursor: pointer;
     display: block;
-    width: 100%;
+    width: 80%;
     border: 1px solid #ddd;
     border-radius: 3px;
   }
 
   .modal-button:hover {
     background-color: #898989;
-  }
-
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
   }
 
   #speciesSelection, #spacer, #characterSummary {
@@ -402,12 +386,12 @@
       let summaryHTML = '<h2>Character Summary</h2>';
       
       if (character.subspecies) {
-        element.textContent += "Species:" + character.subspecies;
-        element.style.display = "block";
+        speciesSummary.textContent = "Species:" + character.subspecies;
+        speciesSummary.style.display = "block";
       }
       if (character.class) {
-        element.textContent += "Class:" + character.class;
-        element.style.display = "block";
+        classSummary.textContent = "Class:" + character.class;
+        classSummary.style.display = "block";
       }
       if (Object.keys(character.abilities).length > 0) {
         for (let ability in character.abilities) {
@@ -420,6 +404,7 @@
             console.error(`Element with id summary${ ability.toUpperCase()} not found`);
           }
         }
+        summaryAbilityScores.style.display = "block";
       }
       // if (character.spells.length > 0) {
       //     summaryHTML += '<p>Spells:</p><ul>';
@@ -509,36 +494,43 @@
   </div>
   <div class="leftBox" style="float: right; display:none;" id="characterSummary">
     <h2>Character Summary</h2>
-    <div id="charSummary" style="display:none;">
-      <div>symbol</div>
+    <div id="charSummary">
+      <div style="display:none;">symbol</div>
       <br>
-      Species 
+      <div id="speciesSummary" style="display:none;"></div> 
       <br>
-      <div id="summaryAbilityScores">
+      <div id="classSummary" style="display:none;"></div> 
+      <br>
+      <div id="summaryAbilityScores" style="display:none;">
         <h4>Ability Scores</h4>
         <div class="row col-12">
-          <div class="col-2">STR:</div><div id="summarySTR" class="col-2">placeholder</div>
-          <div class="col-2">DEX:</div><div id="summaryDEX" class="col-2">placeholder</div>
-          <div class="col-2">CON:</div><div id="summaryCON" class="col-2">placeholder</div>
-          <div class="col-2">INT:</div><div id="summaryINT" class="col-2">placeholder</div>
-          <div class="col-2">WIS:</div><div id="summaryWIS" class="col-2">placeholder</div>
-          <div class="col-2">CHA:</div><div id="summaryCHA" class="col-2">placeholder</div>
+          <div class="col-2">STR:</div>
+          <div class="col-2">DEX:</div>
+          <div class="col-2">CON:</div>
+          <div class="col-2">INT:</div>
+          <div class="col-2">WIS:</div>
+          <div class="col-2">CHA:</div>
+        </div>  
+        <div class="row col-12">
+          <div id="summarySTR" class="col-2">placeholder</div>
+          <div id="summaryDEX" class="col-2">placeholder</div>
+          <div id="summaryCON" class="col-2">placeholder</div>
+          <div id="summaryINT" class="col-2">placeholder</div>
+          <div id="summaryWIS" class="col-2">placeholder</div>
+          <div id="summaryCHA" class="col-2">placeholder</div>
         </div>
       </div>
       <br>
-      def
+      <div id="cantripsSummary" style="display:none;"></div>
       <br>
-      cantrip
-      <div></div>
+      <div id="actionsSummary" style="display:none;"></div>
       <br>
-      actions
-      <div></div>
-      <br>
-      Proficiencies
+      <div id="proficienciesSummary" style="display:none;">
       <div>
         Weapons: <br>
         Armour: <br>
         Skills: <br>
+      </div>
       </div>
     </div>
     
@@ -580,7 +572,6 @@
 
   <div id="subspeciesModal" class="modal">
     <div class="modal-content">
-      <span class="close">&times;</span>
       <h2 id="subspeciesTitle">Choose Subspecies</h2>
       <div id="subspeciesButtons"></div>
     </div>
@@ -703,5 +694,3 @@
 
 </body>
 </html>
-
-

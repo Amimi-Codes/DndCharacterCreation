@@ -1,0 +1,188 @@
+body {
+  font-family: "Lato", sans-serif;
+  background-color: #210000;
+  color:#ffff;
+}
+
+.sidenav {
+  height: 100%;
+  width: 13%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #ff464629;
+  color:white;
+  text-align: center;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #000000;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #cd2424;
+}
+
+.main {
+  margin-left: 160px; /* Same as the width of the sidenav */
+  font-size: 28px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+.leftBox {
+  display: inline-block;
+  width: 40%;
+  height: max-content;
+  background-color: rgb(0, 0, 0);
+  border: 5px solid #7f4e07;
+  border-radius: 10px;
+  padding: 30px;
+  margin-left: 6%;
+  margin-top: 1%;
+  color: white;
+}
+
+#characterSummary {
+  display: inline-block;
+  width: 35%;
+  height: max-content;
+  background-color: rgb(0, 0, 0);
+  border: 5px solid #7f4e07;
+  border-radius: 10px;
+  padding: 30px;
+  margin-left: 6%;
+  margin-top: 1%;
+  color:white;
+}
+
+/* Character Box Styling */
+.charBox {
+  position: relative;
+  width: calc(25% - 10px); /* 25% width minus margins */
+  padding-bottom: calc(25% - 10px); /* Makes it square */
+  display: inline-block;
+  border-radius: 10px;
+  border: 2px solid #7f4e07;
+  margin: 5px;
+  cursor: pointer;
+  font-size: medium;
+  box-sizing: border-box;
+  vertical-align: top;
+  margin-top: 1%;
+}
+
+.charBox::before {
+  content: attr(id);
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.classBox {
+  width: 25%;
+  aspect-ratio: 1 / 1;
+  display: inline-block;
+  border-radius: 10px;
+  border: 2px solid #7f4e07;
+  margin: 5px;
+  cursor: pointer; /* Add cursor pointer for usability */
+  font-size: medium;
+}
+
+.featuresBox {
+  text-align: center;
+  display: inline-block;
+  width: 15%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+/* modal styling */
+.modal {
+  display: none;
+  position: absolute;
+  border-radius: 5px;
+  width: 15%;
+  text-align: center;
+  /* margin-top: 1%;
+  margin-left: 2%; */
+}
+
+.modal-content {
+  background: #653434;
+  padding:2%;
+}
+
+.modal-button {
+  margin: 5px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  display: block;
+  width: 80%;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.modal-button:hover {
+  background-color: #898989;
+}
+
+#speciesSelection, #spacer {
+  display: inline;
+  float: left;
+}
+
+/* reset score button */
+#resetScores {
+  background-color: #66abe0;
+  color: #ffff
+}
+#resetScores:hover {
+  background-color: #0d6efd;
+  color: #ffff
+}
+
+.table {
+  color:white;
+}
+
+.spells-container {
+  padding: 20px;
+}
+
+.spell-stats {
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.spell-levels {
+  display: grid;
+  gap: 20px;
+}
+
+.spell-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.spell-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.spell-item button {
+  margin-top: 10px;
+}

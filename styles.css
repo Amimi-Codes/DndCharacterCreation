@@ -818,4 +818,18 @@ h2 {
     order: -1;
     min-height: 340px;
   }
+  /* background & class pickers: grid instead of one long column */
+  .cl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    justify-items: center;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+  .ci.on {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
 }

@@ -395,7 +395,16 @@ const CL = [
     "#3a4a9a",
   ],
 ];
-const ST = ["Species", "Background", "Class", "Spells", "Ability Score"],
+const ST = [
+    "Species",
+    "Background",
+    "Class",
+    "Skills",
+    "Spells",
+    "Ability Score",
+    "Equipment",
+    "Summary",
+  ],
   CAS = [
     "Bard",
     "Cleric",
@@ -817,3 +826,95 @@ const SF = (n) => [
   };
 for (const k in MORE) F[k].push(...MORE[k]);
 Object.values(F).forEach((a) => a.sort((x, y) => x[0] - y[0]));
+// Skills: [name, ability, used when…]
+const SKL = [
+  ["Acrobatics", "DEX", "Keeping your balance, tumbling, slipping free of a grab."],
+  ["Animal Handling", "WIS", "Calming a horse, reading a guard dog's mood."],
+  ["Arcana", "INT", "Recognizing spells, runes and magic items."],
+  ["Athletics", "STR", "Climbing, swimming, jumping, shoving a foe."],
+  ["Deception", "CHA", "Lying convincingly, bluffing, disguises."],
+  ["History", "INT", "Recalling lore about kingdoms, wars and legends."],
+  ["Insight", "WIS", "Telling whether someone is lying to you."],
+  ["Intimidation", "CHA", "Scaring someone into backing down or talking."],
+  ["Investigation", "INT", "Searching a room, finding clues, spotting how a trap works."],
+  ["Medicine", "WIS", "Stabilizing a dying ally, diagnosing illness."],
+  ["Nature", "INT", "Knowing plants, beasts, weather and terrain."],
+  ["Perception", "WIS", "Noticing ambushes, hidden doors and traps. Used constantly."],
+  ["Performance", "CHA", "Music, dance, acting, storytelling for a crowd."],
+  ["Persuasion", "CHA", "Talking someone into helping you, haggling."],
+  ["Religion", "INT", "Knowing gods, rites, holy symbols and undead."],
+  ["Sleight of Hand", "DEX", "Picking pockets, palming objects."],
+  ["Stealth", "DEX", "Sneaking past guards, hiding, ambushing."],
+  ["Survival", "WIS", "Tracking, hunting, finding your way in the wild."],
+];
+// Class skills: [how many, choose from (empty = any), recommended]
+const CSK = {
+  Barbarian: [2, ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"], ["Athletics", "Perception"]],
+  Bard: [3, [], ["Persuasion", "Deception", "Perception"]],
+  Cleric: [2, ["History", "Insight", "Medicine", "Persuasion", "Religion"], ["Insight", "Medicine"]],
+  Druid: [2, ["Arcana", "Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion", "Survival"], ["Perception", "Nature"]],
+  Fighter: [2, ["Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Persuasion", "Perception", "Survival"], ["Athletics", "Perception"]],
+  Monk: [2, ["Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"], ["Acrobatics", "Stealth"]],
+  Paladin: [2, ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"], ["Athletics", "Persuasion"]],
+  Ranger: [3, ["Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"], ["Perception", "Stealth", "Survival"]],
+  Rogue: [4, ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Persuasion", "Sleight of Hand", "Stealth"], ["Stealth", "Perception", "Acrobatics", "Investigation"]],
+  Sorcerer: [2, ["Arcana", "Deception", "Insight", "Intimidation", "Persuasion", "Religion"], ["Arcana", "Persuasion"]],
+  Warlock: [2, ["Arcana", "Deception", "History", "Intimidation", "Investigation", "Nature", "Religion"], ["Arcana", "Deception"]],
+  Wizard: [2, ["Arcana", "History", "Insight", "Investigation", "Medicine", "Nature", "Religion"], ["Arcana", "Investigation"]],
+};
+// Class details for the summary: [saving throws, spellcasting ability, your first fight]
+const CX = {
+  Barbarian: [["STR", "CON"], "", "Rage as a bonus action, then run at the biggest enemy and swing your greataxe. Rage halves weapon damage against you, so you can stand in the middle of the fight."],
+  Bard: [["DEX", "CHA"], "CHA", "Hang back. Give an ally Bardic Inspiration as a bonus action, then throw Vicious Mockery or Dissonant Whispers. Keep Healing Word for anyone who drops to 0 HP."],
+  Cleric: [["WIS", "CHA"], "WIS", "Cast Bless on the party at the start, then stay near your friends. Use Sacred Flame or your mace, and Healing Word anyone who goes down."],
+  Druid: [["INT", "WIS"], "WIS", "Open with Entangle or Faerie Fire to lock enemies down, then use your cantrips. From level 2, Wild Shape lets you turn into a beast and take hits."],
+  Fighter: [["STR", "CON"], "", "Stand between the enemies and your squishier friends and attack every turn. Second Wind heals you when you're hurt; Action Surge at level 2 gives you a whole extra turn."],
+  Monk: [["STR", "DEX"], "", "Dash in, attack with your weapon, then make a bonus unarmed strike. Your speed lets you reach enemy archers and spellcasters that others can't."],
+  Paladin: [["WIS", "CHA"], "CHA", "Wade in with sword and shield and strike. Save Lay On Hands for emergencies; from level 2, spend a spell slot on a hit to smite for big radiant damage."],
+  Ranger: [["STR", "DEX"], "WIS", "Cast Hunter's Mark on one enemy as a bonus action, then shoot it with your longbow every turn. Move the mark when it dies."],
+  Rogue: [["DEX", "INT"], "", "Hide or attack an enemy that an ally is next to, so you get Sneak Attack. Hit once with a shortsword or shortbow, then use Cunning Action to step out of reach."],
+  Sorcerer: [["CON", "CHA"], "CHA", "Stay at range and cast Fire Bolt every turn. Use Magic Missile when you need a sure hit, and keep Shield ready as a reaction if something reaches you."],
+  Warlock: [["WIS", "CHA"], "CHA", "Cast Hex on a target as a bonus action, then Eldritch Blast it every turn. Your spell slots come back after a short rest, so don't hoard them."],
+  Wizard: [["INT", "WIS"], "INT", "Stay behind the front line. Cast Fire Bolt or Ray of Frost, use Thunderwave if enemies get close, and Shield when an attack would hit you."],
+};
+// Starting equipment: kits [label, items, armor, weapons, gold]; g = gold-only option.
+// armor: [base AC, DEX cap, shield bonus] or "UB" (10+DEX+CON) / "UM" (10+DEX+WIS)
+// weapon: [name, damage, type, ability: S / D / F (finesse, best of STR or DEX)]
+const EQ = {
+  Barbarian: { g: 75, k: [["Standard kit", "Greataxe, 4 Handaxes, Explorer's Pack", "UB", [["Greataxe", "1d12", "slashing", "S"], ["Handaxe (thrown 20 ft)", "1d6", "slashing", "S"]], 15]] },
+  Bard: { g: 90, k: [["Standard kit", "Leather Armor, 2 Daggers, Musical Instrument, Entertainer's Pack", [11, 99, 0], [["Dagger", "1d4", "piercing", "F"]], 19]] },
+  Cleric: { g: 110, k: [["Standard kit", "Chain Shirt, Shield, Mace, Holy Symbol, Priest's Pack", [13, 2, 2], [["Mace", "1d6", "bludgeoning", "S"]], 7]] },
+  Druid: { g: 50, k: [["Standard kit", "Leather Armor, Shield, Sickle, Quarterstaff (druidic focus), Explorer's Pack, Herbalism Kit", [11, 99, 2], [["Sickle", "1d4", "slashing", "S"], ["Quarterstaff", "1d6", "bludgeoning", "S"]], 9]] },
+  Fighter: { g: 155, k: [["Heavy kit (melee)", "Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer's Pack", [16, 0, 0], [["Greatsword", "2d6", "slashing", "S"], ["Javelin (thrown 30 ft)", "1d6", "piercing", "S"]], 4], ["Light kit (archer)", "Studded Leather, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Dungeoneer's Pack", [12, 99, 0], [["Longbow (150 ft)", "1d8", "piercing", "D"], ["Scimitar", "1d6", "slashing", "F"]], 11]] },
+  Monk: { g: 50, k: [["Standard kit", "Spear, 5 Daggers, Artisan's Tools, Explorer's Pack", "UM", [["Unarmed Strike", "1d6", "bludgeoning", "F"], ["Spear", "1d6", "piercing", "F"]], 11]] },
+  Paladin: { g: 150, k: [["Standard kit", "Chain Mail, Shield, Longsword, 6 Javelins, Holy Symbol, Priest's Pack", [16, 0, 2], [["Longsword", "1d8", "slashing", "S"], ["Javelin (thrown 30 ft)", "1d6", "piercing", "S"]], 9]] },
+  Ranger: { g: 150, k: [["Standard kit", "Studded Leather, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Druidic Focus, Explorer's Pack", [12, 99, 0], [["Longbow (150 ft)", "1d8", "piercing", "D"], ["Scimitar", "1d6", "slashing", "F"]], 7]] },
+  Rogue: { g: 100, k: [["Standard kit", "Leather Armor, 2 Daggers, Shortsword, Shortbow, 20 Arrows, Quiver, Thieves' Tools, Burglar's Pack", [11, 99, 0], [["Shortsword", "1d6", "piercing", "F"], ["Shortbow (80 ft)", "1d6", "piercing", "D"]], 8]] },
+  Sorcerer: { g: 50, k: [["Standard kit", "Spear, 2 Daggers, Arcane Focus (crystal), Dungeoneer's Pack", [10, 99, 0], [["Dagger", "1d4", "piercing", "F"]], 28]] },
+  Warlock: { g: 100, k: [["Standard kit", "Leather Armor, Sickle, 2 Daggers, Arcane Focus (orb), Book, Scholar's Pack", [11, 99, 0], [["Dagger", "1d4", "piercing", "F"]], 15]] },
+  Wizard: { g: 55, k: [["Standard kit", "2 Daggers, Quarterstaff (arcane focus), Robe, Spellbook, Scholar's Pack", [10, 99, 0], [["Quarterstaff", "1d6", "bludgeoning", "S"]], 5]] },
+};
+// Plain-language help for rules terms (shown behind a "?")
+const GL = {
+  Speed: "How many feet you can move on your turn. 30 ft is about 6 squares on a battle map.",
+  Darkvision: "You can see in dim light as if it were bright, and in darkness as if it were dim, out to this range.",
+  Resist: "You take half damage from this damage type.",
+  "Origin Feat": "A special ability from your background, on top of your class features.",
+  "Hit Point Die": "The die you roll for extra hit points each time you level up. Bigger die = tougher character.",
+  "Hit points": "How much damage you can take. At 0 you fall unconscious and start making death saves.",
+  "Armor class": "How hard you are to hit. An attack hits if its roll equals or beats your AC.",
+  Initiative: "Added to your d20 roll at the start of a fight to decide who goes first.",
+  Proficiency: "You're trained in it: add your proficiency bonus (+2 at level 1) to the roll.",
+  Cantrips: "Spells you can cast as often as you like, without using up a spell slot.",
+  "Level 1 spells": "Stronger spells that use a spell slot. You get your slots back after a long rest.",
+  "Saving throws": "Rolls to resist something bad, like a spell or poison. Proficient saves get your proficiency bonus.",
+  "Spell save DC": "The number an enemy must roll to resist your spells.",
+  "Passive Perception": "What you notice without trying. The DM compares it to hidden things and sneaking enemies.",
+};
+// Ready-made characters: [label, species, lineage index, background, class, blurb]
+const EX = [
+  ["The healer", "Dwarf", 0, "Acolyte", "Cleric", "Tough, hard to kill and keeps the party on their feet."],
+  ["The sneak", "Elf", 1, "Criminal", "Rogue", "Quick, quiet, and deals big damage from the shadows."],
+  ["The tank", "Human", 0, "Soldier", "Fighter", "Heavy armor and a big sword. Simple and sturdy."],
+  ["The blaster", "Tiefling", 2, "Charlatan", "Warlock", "Throws eldritch blasts and talks their way out of trouble."],
+];

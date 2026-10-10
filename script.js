@@ -61,6 +61,9 @@ const AB = ["STR", "DEX", "CON", "INT", "WIS", "CHA"],
     sel: {},
     sk: 0,
     sf: "all",
+    kk: 0,
+    ks: {},
+    eq: 0,
     ab: {
       s: { STR: 8, DEX: 8, CON: 8, INT: 8, WIS: 8, CHA: 8 },
       m: 21,
@@ -76,8 +79,15 @@ const look = (i = S.s, rb) => {
     l = x.L[S.l[i] || 0];
   return { ...x.v, ...(l ? l.v : {}), ...(rb ? { robe: rb } : {}) };
 };
+const q = (t) =>
+  `<i class="q" tabindex="0">?<i class="tip"><b>${t}</b>${GL[t]}</i></i>`;
 const box = (b, l, c) =>
-  `<div class="bx" style="--c:${c}"><b>${b}</b><span>${l}</span></div>`;
+  `<div class="bx" style="--c:${c}"><b>${b}</b><span>${l}${GL[l] ? q(l) : ""}</span></div>`;
+const spName = () => {
+  const x = SP[S.s],
+    l = x.L[S.l[S.s] || 0];
+  return l ? l.n + (/Elf|Gnome|Giant/.test(l.n) ? "" : " " + x.n) : x.n;
+};
 function sp() {
   const x = SP[S.s],
     li = S.l[S.s] || 0,
@@ -87,7 +97,7 @@ function sp() {
     res = (l && l.r) || x.r || "—";
   const tr = [...x.tr, ...((l && l.x) || [])];
   $("v").innerHTML =
-    `<div class="stage"><div class="col">${steps()}<div class="p" style="flex:1"><div class="k">Heritage</div><h2>${x.n}</h2><p>${x.s}</p>${l && l.d ? `<p><b style="color:var(--g)">${l.n}.</b> ${l.d}</p>` : ""}<div class="note">${x.L.length ? x.lh + ": choose one lineage →" : "No lineages. Every " + x.n + " shares the same traits."}</div></div></div>
+    `<div class="stage"><div class="col">${steps()}<button class="nav" id="ex">★ New here? Start from a ready-made character</button><div class="p" style="flex:1"><div class="k">Heritage</div><h2>${x.n}</h2><p>${x.s}</p>${l && l.d ? `<p><b style="color:var(--g)">${l.n}.</b> ${l.d}</p>` : ""}<div class="note">${x.L.length ? x.lh + ": choose one lineage →" : "No lineages. Every " + x.n + " shares the same traits."}</div></div></div>
 <div class="hero">${ch(look())}</div>
 <div class="col"><div class="p"><div class="k">At a glance</div><div class="boxes">${box(spd + " ft", "Speed", "#f3c26b")}${box(x.z.replace(" or ", " / "), "Size", "#e0793a")}${box(dv ? dv + " ft" : "—", "Darkvision", "#9fe0d0")}${box(res, "Resist", "#e58fb6")}</div></div>
 <div class="p" style="flex:1">${x.L.length ? `<div class="k">${x.lh}</div><div class="chips">${x.L.map((q, i) => `<button class="chip ${i == li ? "on" : ""}" data-l="${i}">${q.n}</button>`).join("")}</div>` : ""}<div class="k">Traits</div><ul class="tr">${tr.map((t) => `<li><b>${t[0]}</b>${t[1] ? " · " + t[1] : ""}</li>`).join("")}</ul><button class="cta" id="pk">Choose ${l ? l.n.replace(/ Giant$/, "") : x.n}</button></div></div></div>
@@ -109,13 +119,9 @@ function sp() {
   $("pv").onclick = () => go(-1);
   $("nx").onclick = () => go(1);
   $("al").onclick = all;
+  $("ex").onclick = exm;
   $("pk").onclick = () => {
-    S.p.sp = (
-      l && !/Giant|Standard/.test(l.n) && x.n !== "Dragonborn"
-        ? l.n
-        : (l ? l.n.split(" ")[0] + " " : "") + x.n
-    ).replace(/^(High|Wood) Elf Elf/, "$1 Elf");
-    S.p.sp = l ? l.n + (/Elf|Gnome|Giant/.test(l.n) ? "" : " " + x.n) : x.n;
+    S.p.sp = spName();
     S.t = 2;
     rd();
     sm();
@@ -132,10 +138,10 @@ const hasSp = () =>
   (SP[S.s].L[S.l[S.s] || 0] || {}).n === "High Elf" ||
   BG[S.b][4].startsWith("Magic Initiate");
 function steps() {
-  return `<div class="p"><div class="k">Character creation</div><div class="bar"><i style="width:${(S.t / 5) * 100}%"></i></div><div class="st">${ST.map(
+  return `<div class="p"><div class="k">Character creation</div><div class="bar"><i style="width:${(S.t / ST.length) * 100}%"></i></div><div class="st">${ST.map(
     (n, i) => {
       const k = i + 1,
-        off = k == 4 && !hasSp();
+        off = k == 5 && !hasSp();
       return `<button class="s ${k == S.t ? "on" : k < S.t ? "dn" : ""} ${off ? "off" : ""}" data-st="${k}" ${off ? "disabled" : ""} title="${off ? "No spell choices for this combination" : n}"><b>${off ? "–" : k}</b>${n}</button>`;
     },
   ).join("")}</div></div>`;
@@ -151,7 +157,7 @@ function bg() {
     `<div class="stage"><div class="col" style="align-items:center">${steps()}<div class="cl">${BG.map((q, i) => `<div class="ci ${i == S.b ? "on" : ""}" data-i="${i}" title="${q[0]}">${q[1]}</div>`).join("")}</div></div>
 <div class="hero">${ch(look())}<div class="badge">${b[1]}</div></div>
 <div class="col"><div class="p"><div class="k">Background</div><h2>${b[0]}</h2><p>${b[2]}</p><div class="k">Ability scores · +2/+1 or +1/+1/+1</div><div class="boxes" style="grid-template-columns:repeat(3,1fr)">${b[3].map((a) => box(a, "Ability", "#f3c26b")).join("")}</div>
-<ul class="tr" style="max-height:none"><li><b>Origin Feat</b> · ${b[4]}</li><li><b>Skills</b> · ${b[5].join(", ")}</li><li><b>Tool</b> · ${b[6]}</li></ul><button class="cta" id="pk">Choose ${b[0]}</button></div></div></div>
+<ul class="tr" style="max-height:none"><li><b>Origin Feat</b>${q("Origin Feat")} · ${b[4]}</li><li><b>Skills</b> · ${b[5].join(", ")}</li><li><b>Tool</b> · ${b[6]}</li></ul><button class="cta" id="pk">Choose ${b[0]}</button></div></div></div>
 <div class="rail"><button class="nav" id="pv">◀ Prev</button><button class="nav" id="nx">Next ▶</button></div>`;
   document.querySelector(".cl").scrollTop = y;
   document.querySelectorAll(".ci").forEach(
@@ -178,7 +184,7 @@ function cl() {
   $("v").innerHTML =
     `<div class="stage"><div class="col" style="align-items:center">${steps()}<div class="cl">${CL.map((q, i) => `<div class="ci ${i == S.c ? "on" : ""}" data-i="${i}" title="${q[0]}">${q[1]}</div>`).join("")}</div></div>
 <div class="hero">${ch(look(S.s, c[5]))}<div class="badge">${c[1]}</div></div>
-<div class="col"><div class="p"><div class="k">${role}</div><h2>${c[0]}</h2><div class="pill">Hit Point Die: ${die.toUpperCase()}</div><p>${c[2]}</p>
+<div class="col"><div class="p"><div class="k">${role}</div><h2>${c[0]}</h2><div class="pill">Hit Point Die: ${die.toUpperCase()}${q("Hit Point Die")}</div><p>${c[2]}</p>
 <div class="k">Class features</div><div class="ft">${f.map((t) => `<div class="fi ${t[0] > S.lv ? "lk" : ""}" tabindex="0"><span>${t[1]}</span><div class="tip"><b>${t[2]}</b><em>Level ${t[0]}</em>${t[3]}</div></div>`).join("")}</div>
 <div class="k">Recommended stat distribution</div><div class="rings">${AB.map((a) => rg(a, c)).join("")}</div>
 <div class="row"><div class="lvl"><button id="lm">−</button><span>Level ${S.lv}</span><button id="lp">+</button></div><button class="nav" id="lu">View level up traits</button></div>
@@ -223,7 +229,7 @@ function cl() {
   $("pk").onclick = () => {
     S.p.cl = c[0];
     sm();
-    S.t = hasSp() ? 4 : 5;
+    S.t = 4;
     rd();
   };
 }
@@ -260,15 +266,7 @@ function sm() {
     `Your hero: <b>${S.p.sp || "…"}</b> · <b>${S.p.bg || "…"}</b> · <b>${S.p.cl || "…"}</b>${((n) => (n ? ` · <b>${n} spells</b>` : ""))(Object.values(S.sel).flat().length)}`;
 }
 function rd() {
-  S.t == 1
-    ? sp()
-    : S.t == 2
-      ? bg()
-      : S.t == 4
-        ? spl()
-        : S.t == 5
-          ? abl()
-          : cl();
+  [sp, bg, cl, skl, spl, abl, eqp, sheet][S.t - 1]();
 }
 $("x2").onclick = () => $("m2").classList.remove("on");
 $("v").addEventListener("click", (e) => {
@@ -301,6 +299,16 @@ const pri = () => {
   const r = [...CL[S.c][3], "CON", "DEX", "WIS", "CHA", "INT", "STR"];
   return r.filter((a, i) => r.indexOf(a) == i);
 };
+function recAb() {
+  const o = S.ab,
+    T = [15, 14, 13, 12, 10, 8],
+    P = pri(),
+    best = P.filter((a) => BG[S.b][3].includes(a));
+  P.forEach((a, i) => (o.s[a] = T[i]));
+  o.m = 21;
+  o.p2 = best[0];
+  o.p1 = best[1];
+}
 function abl() {
   const o = S.ab,
     y = scrollY,
@@ -322,8 +330,8 @@ function abl() {
 <div class="p"><div class="k">Points remaining</div><div class="pips">${Array.from({ length: 27 }, (_, i) => `<i class="${i < 27 - left ? "u" : ""}"></i>`).join("")}</div><div class="note"><b style="color:var(--g)">${left}</b> of 27 · scores range 8–15 before bonuses</div></div>
 <div class="p"><div class="k">${BG[S.b][0]} bonus</div><div class="chips"><button class="chip ${o.m == 21 ? "on" : ""}" data-m="21">+2 / +1</button><button class="chip ${o.m == 111 ? "on" : ""}" data-m="111">+1 / +1 / +1</button></div>${o.m == 21 ? `<div class="note">+2 to</div><div class="chips">${L.map((a) => ch2(2, a)).join("")}</div><div class="note">+1 to</div><div class="chips">${L.map((a) => ch2(1, a)).join("")}</div>` : `<div class="note">+1 to ${L.join(", ")}</div>`}</div></div>
 <div class="hero">${ch(look(S.s, c[5]))}<div class="badge">${c[1]}</div></div>
-<div class="col"><div class="p"><div class="k">Step 5 · Ability scores</div><div class="boxes" style="grid-template-columns:repeat(3,1fr)">${box(hp, "Hit points", "#e58fb6")}${box(10 + md("DEX"), "Armor class", "#f3c26b")}${box(sg(md("DEX")), "Initiative", "#9fe0d0")}</div></div>
-<div class="p"><div class="row" style="margin:0 0 6px"><button class="nav" id="rc">★ Recommended for ${c[0]}</button><button class="nav" id="rs">Reset</button></div>${AB.map(row).join("")}<button class="cta" id="pk">${S.p.ab ? "✔ Scores saved" : "Confirm ability scores"}</button></div></div></div>`;
+<div class="col"><div class="p"><div class="k">Ability scores</div><div class="boxes" style="grid-template-columns:repeat(3,1fr)">${box(hp, "Hit points", "#e58fb6")}${box(10 + md("DEX"), "Armor class", "#f3c26b")}${box(sg(md("DEX")), "Initiative", "#9fe0d0")}</div></div>
+<div class="p"><div class="row" style="margin:0 0 6px"><button class="nav" id="rc">★ Recommended for ${c[0]}</button><button class="nav" id="rs">Reset</button></div>${AB.map(row).join("")}<button class="cta" id="pk">Confirm ability scores ▶</button></div></div></div>`;
   document.querySelectorAll("[data-d]").forEach(
     (e) =>
       (e.onclick = () => {
@@ -354,13 +362,7 @@ function abl() {
       }),
   );
   $("rc").onclick = () => {
-    const T = [15, 14, 13, 12, 10, 8],
-      P = pri(),
-      best = P.filter((a) => L.includes(a));
-    P.forEach((a, i) => (o.s[a] = T[i]));
-    o.m = 21;
-    o.p2 = best[0];
-    o.p1 = best[1];
+    recAb();
     S.p.ab = 0;
     abl();
   };
@@ -371,9 +373,204 @@ function abl() {
   };
   $("pk").onclick = () => {
     S.p.ab = 1;
-    abl();
+    S.t = 7;
+    rd();
   };
   scrollTo(0, y);
+}
+// ---- Shared maths: final score, modifier, signed number ----
+const fin = (a) => S.ab.s[a] + bon()(a),
+  md = (a) => Math.floor((fin(a) - 10) / 2),
+  sg = (n) => (n >= 0 ? "+" : "") + n,
+  PB = 2;
+// ---- Skills ----
+function skSrc() {
+  const c = CL[S.c][0],
+    [n, from, rec] = CSK[c],
+    x = SP[S.s],
+    a = [{ k: "cl", t: c + " skills", n, from, rec }];
+  if (x.n == "Human")
+    a.push({ k: "hu", t: "Human · Skillful", n: 1, from: [], rec: ["Perception", "Insight"] });
+  if (x.n == "Elf")
+    a.push({ k: "el", t: "Elf · Keen Senses", n: 1, from: ["Insight", "Perception", "Survival"], rec: ["Perception", "Insight"] });
+  if (BG[S.b][4] == "Skilled")
+    a.push({ k: "fe", t: "Skilled feat", n: 3, from: [], rec: ["Perception", "Insight", "Persuasion", "Stealth"] });
+  return a;
+}
+// Drop picks that no longer fit (class changed, now from background…); returns every proficient skill
+function skFix() {
+  const taken = [...BG[S.b][5]];
+  for (const a of skSrc()) {
+    S.ks[a.k] = (S.ks[a.k] || [])
+      .filter((n) => (!a.from.length || a.from.includes(n)) && !taken.includes(n))
+      .slice(0, a.n);
+    taken.push(...S.ks[a.k]);
+  }
+  return taken;
+}
+function recSkills() {
+  const taken = [...BG[S.b][5]];
+  for (const a of skSrc()) {
+    const pool = a.from.length ? a.from : SKL.map((x) => x[0]);
+    S.ks[a.k] = [...a.rec, ...pool]
+      .filter((n, i, r) => r.indexOf(n) == i && !taken.includes(n))
+      .slice(0, a.n);
+    taken.push(...S.ks[a.k]);
+  }
+}
+function skl() {
+  const A = skSrc(),
+    a = A[Math.min(S.kk, A.length - 1)],
+    y = scrollY,
+    taken = skFix(),
+    sel = S.ks[a.k],
+    bgs = BG[S.b][5];
+  const card = ([n, ab, d]) => {
+    const on = sel.includes(n),
+      fb = bgs.includes(n),
+      other = !on && !fb && taken.includes(n);
+    if (!fb && !other && a.from.length && !a.from.includes(n)) return "";
+    const tag = fb
+      ? "✔ Background"
+      : other
+        ? "✔ Taken"
+        : a.rec.includes(n)
+          ? "★ Recommended"
+          : "";
+    return `<div class="sc ${on ? "on" : ""} ${fb || other ? "lock" : ""} ${!on && !fb && !other && sel.length >= a.n ? "full" : ""}" data-k="${n}"><div class="sh"><b>${n}</b><em>${tag}</em></div><p><b>Used for:</b> ${d}</p><div class="inf">Uses ${AN2[ab][0]}</div></div>`;
+  };
+  $("v").innerHTML =
+    `<div class="spw"><div class="col">${steps()}<div class="p" style="text-align:center"><div style="width:170px;margin:0 auto">${ch(look(S.s, CL[S.c][5]), "40 30 220 220")}</div><div class="k">Your skills</div><p style="margin-top:8px">${taken.join(" · ")}</p></div></div>
+<div class="p"><p>Skills are what you're good at outside of combat. You add your proficiency bonus (+2) when you roll for one you're trained in. Your background already gave you <b style="color:var(--g)">${bgs.join(" and ")}</b>.</p><div class="chips">${A.map((x, i) => `<button class="chip ${x === a ? "on" : ""}" data-kk="${i}">${x.t}</button>`).join("")}</div><div class="row" style="margin:0"><span class="pill">Chosen ${sel.length}/${a.n}${q("Proficiency")}</span><button class="nav" id="rck">★ Use recommended skills</button></div>
+<div class="sg">${SKL.map(card).join("")}</div><button class="cta" id="gok">Continue ▶</button></div></div>`;
+  document.querySelectorAll("[data-k]").forEach(
+    (e) =>
+      (e.onclick = () => {
+        const n = e.dataset.k,
+          i = sel.indexOf(n);
+        if (i >= 0) sel.splice(i, 1);
+        else if (!taken.includes(n) && sel.length < a.n) sel.push(n);
+        skl();
+      }),
+  );
+  document.querySelectorAll("[data-kk]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        S.kk = +b.dataset.kk;
+        skl();
+      }),
+  );
+  $("rck").onclick = () => {
+    recSkills();
+    skl();
+  };
+  $("gok").onclick = () => {
+    S.t = hasSp() ? 5 : 6;
+    rd();
+  };
+  scrollTo(0, y);
+}
+// ---- Equipment ----
+const eqOpts = () => {
+  const e = EQ[CL[S.c][0]];
+  return [...e.k, ["Gold only", `${e.g} GP to buy your own gear with your DM`, 0, [], e.g]];
+};
+function acOf(o) {
+  const ar = o[2] || { Barbarian: "UB", Monk: "UM" }[CL[S.c][0]] || [10, 99, 0];
+  if (ar == "UB") return 10 + md("DEX") + md("CON");
+  if (ar == "UM") return 10 + md("DEX") + md("WIS");
+  return ar[0] + (ar[1] ? Math.min(md("DEX"), ar[1]) : 0) + ar[2];
+}
+const wmod = (w) =>
+  w[3] == "S" ? md("STR") : w[3] == "D" ? md("DEX") : Math.max(md("STR"), md("DEX"));
+const atk = (w) =>
+  `<li><b>${w[0]}</b> · ${sg(wmod(w) + PB)} to hit · ${w[1]}${wmod(w) ? sg(wmod(w)) : ""} ${w[2]}</li>`;
+function eqp() {
+  const O = eqOpts(),
+    y = scrollY;
+  S.eq = Math.min(S.eq, O.length - 1);
+  $("v").innerHTML =
+    `<div class="spw"><div class="col">${steps()}<div class="p" style="text-align:center"><div style="width:170px;margin:0 auto">${ch(look(S.s, CL[S.c][5]), "40 30 220 220")}</div><div class="boxes" style="grid-template-columns:repeat(2,1fr)">${box(acOf(O[S.eq]), "Armor class", "#f3c26b")}${box(O[S.eq][4] + " GP", "Gold", "#e0793a")}</div></div></div>
+<div class="p"><p>Take the standard kit and you're ready to play: armor, weapons and supplies picked for a ${CL[S.c][0]}. The numbers below are already worked out from your ability scores.</p><div class="sg">${O.map(
+      (o, i) =>
+        `<div class="sc ${i == S.eq ? "on" : ""}" data-e="${i}"><div class="sh"><b>${o[0]}</b><em>${i == 0 ? "★ Recommended" : ""}</em></div><p>${o[1]}${o[3].length ? ` · ${o[4]} GP` : ""}</p><div class="inf">🛡️ AC ${acOf(o)}</div>${o[3].length ? `<ul class="tr" style="max-height:none">${o[3].map(atk).join("")}</ul>` : ""}</div>`,
+    ).join("")}</div><button class="cta" id="goe">See my character ▶</button></div></div>`;
+  document.querySelectorAll("[data-e]").forEach(
+    (e) =>
+      (e.onclick = () => {
+        S.eq = +e.dataset.e;
+        eqp();
+      }),
+  );
+  $("goe").onclick = () => {
+    S.t = 8;
+    rd();
+  };
+  scrollTo(0, y);
+}
+// ---- Summary: every number worked out ----
+function sheet() {
+  const c = CL[S.c],
+    cx = CX[c[0]],
+    x = SP[S.s],
+    l = x.L[S.l[S.s] || 0],
+    o = eqOpts()[Math.min(S.eq, eqOpts().length - 1)],
+    prof = skFix(),
+    // ponytail: non-casters with a racial/feat spell use their best mental score; ask per source if it matters
+    cs = cx[1] || ["INT", "WIS", "CHA"].sort((p, r) => md(r) - md(p))[0],
+    dc = 8 + PB + md(cs),
+    spells = [...new Set(Object.values(S.sel).flat())],
+    hp = +c[4].slice(1, 3) + md("CON") + (x.n == "Dwarf" ? 1 : 0),
+    sk = (n) => md(SKL.find((s) => s[0] == n)[1]) + (prof.includes(n) ? PB : 0);
+  const spl1 = (n) => {
+    const z = SPL.find((s) => s[0] == n);
+    const bits = [
+      z[9] == "Attack roll" ? `${sg(md(cs) + PB)} to hit` : / save/.test(z[9]) ? `DC ${dc} ${z[9]}` : "",
+      `${z[5]} ${z[4]}`.trim(),
+    ].filter(Boolean);
+    return `<li><b>${n}</b>${bits.length ? " · " + bits.join(" · ") : ""}</li>`;
+  };
+  $("v").innerHTML =
+    `<div class="stage"><div class="col">${steps()}<div class="p"><div class="k">Level 1 ${c[0]}</div><h2>${S.p.sp || spName()}</h2><p>${BG[S.b][0]} background</p><div class="k">Your first fight</div><p>${cx[2]}</p></div>
+<div class="p"><div class="k">Ability scores</div><div class="boxes" style="grid-template-columns:repeat(3,1fr)">${AB.map((a) => box(sg(md(a)), a + " " + fin(a), "#f3c26b")).join("")}</div><div class="k" style="margin-top:12px">Saving throws${q("Saving throws")}</div><ul class="tr" style="max-height:none">${AB.map((a) => `<li>${cx[0].includes(a) ? "<b>★ " + a + "</b>" : a} ${sg(md(a) + (cx[0].includes(a) ? PB : 0))}</li>`).join("")}</ul></div></div>
+<div class="hero">${ch(look(S.s, c[5]))}<div class="badge">${c[1]}</div></div>
+<div class="col"><div class="p"><div class="k">Combat</div><div class="boxes">${box(hp, "Hit points", "#e58fb6")}${box(acOf(o), "Armor class", "#f3c26b")}${box(sg(md("DEX")), "Initiative", "#9fe0d0")}${box(((l && l.sp) || x.sp) + " ft", "Speed", "#e0793a")}</div>
+<ul class="tr" style="max-height:none">${o[3].map(atk).join("")}${spells.map(spl1).join("")}</ul>${spells.length ? `<div class="boxes" style="grid-template-columns:repeat(2,1fr)">${box(dc, "Spell save DC", "#9fe0d0")}${box(sg(md(cs) + PB), "Spell attack", "#e58fb6")}</div>` : ""}</div>
+<div class="p"><div class="k">Skills · ★ = proficient</div><div class="boxes" style="grid-template-columns:repeat(2,1fr)">${box(PB + "", "Proficiency", "#f3c26b")}${box(10 + sk("Perception"), "Passive Perception", "#9fe0d0")}</div><ul class="tr two" style="max-height:none">${SKL.map(([n]) => `<li>${prof.includes(n) ? `<b>★ ${n}</b>` : n} ${sg(sk(n))}</li>`).join("")}</ul>
+<div class="k" style="margin-top:12px">Equipment</div><p style="margin-top:6px">${o[1]}${o[3].length ? ` · ${o[4]} GP` : ""}</p></div></div></div>`;
+}
+// ---- Ready-made characters ----
+function exm() {
+  $("m2t").textContent = "Start from a ready-made character";
+  $("m2b").innerHTML =
+    `<p class="note">Pick one and every step is filled in for you. You can still go back and change anything.</p><div class="grid">${EX.map((e, i) => {
+      const x = SP.find((s) => s.n == e[1]),
+        l = x.L[e[2]],
+        c = CL.find((k) => k[0] == e[4]);
+      return `<button class="tile" data-x="${i}">${ch({ ...x.v, ...(l ? l.v : {}), robe: c[5] }, "40 30 220 220")}${e[0]}<small class="note" style="display:block;padding:0 8px">${l ? l.n.replace(/ Elf$/, "") + " " : ""}${e[1]} ${e[4]}<br>${e[5]}</small></button>`;
+    }).join("")}</div>`;
+  document.querySelectorAll("[data-x]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        const e = EX[+b.dataset.x];
+        S.s = SP.findIndex((s) => s.n == e[1]);
+        S.l[S.s] = e[2];
+        S.b = BG.findIndex((k) => k[0] == e[3]);
+        S.c = CL.findIndex((k) => k[0] == e[4]);
+        S.sel = {};
+        S.ks = {};
+        S.eq = 0;
+        recSkills();
+        recSpells();
+        recAb();
+        S.p = { sp: spName(), bg: e[3], cl: e[4], ab: 1 };
+        S.t = 8;
+        $("m2").classList.remove("on");
+        rd();
+        sm();
+      }),
+  );
+  $("m2").classList.add("on");
 }
 let lk = 0;
 addEventListener(

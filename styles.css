@@ -570,8 +570,49 @@ h2 {
   margin-bottom: 4px;
 }
 .fi:hover .tip,
-.fi:focus .tip {
+.fi:focus .tip,
+.q:hover .tip,
+.q:focus .tip {
   display: block;
+}
+/* "?" help bubble next to rules terms */
+.q {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  margin-left: 4px;
+  border-radius: 50%;
+  border: 1px solid var(--g);
+  color: var(--g);
+  font: 800 10px Nunito;
+  font-style: normal;
+  vertical-align: middle;
+  cursor: help;
+  outline: 0;
+}
+.q .tip {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.gf {
+  color: var(--ink);
+}
+.gf b {
+  color: var(--g);
+}
+.sc.lock {
+  cursor: default;
+  border-style: dashed;
+}
+.tr.two {
+  columns: 2;
+  column-gap: 16px;
 }
 .row {
   display: flex;
@@ -817,5 +858,19 @@ h2 {
   .hero {
     order: -1;
     min-height: 340px;
+  }
+  /* background & class pickers: grid instead of one long column */
+  .cl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    justify-items: center;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+  .ci.on {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
   }
 }

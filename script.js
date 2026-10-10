@@ -101,7 +101,7 @@ function sp() {
 <div class="hero">${ch(look())}</div>
 <div class="col"><div class="p"><div class="k">At a glance</div><div class="boxes">${box(spd + " ft", "Speed", "#f3c26b")}${box(x.z.replace(" or ", " / "), "Size", "#e0793a")}${box(dv ? dv + " ft" : "—", "Darkvision", "#9fe0d0")}${box(res, "Resist", "#e58fb6")}</div></div>
 <div class="p" style="flex:1">${x.L.length ? `<div class="k">${x.lh}</div><div class="chips">${x.L.map((q, i) => `<button class="chip ${i == li ? "on" : ""}" data-l="${i}">${q.n}</button>`).join("")}</div>` : ""}<div class="k">Traits</div><ul class="tr">${tr.map((t) => `<li><b>${t[0]}</b>${t[1] ? " · " + t[1] : ""}</li>`).join("")}</ul><button class="cta" id="pk">Choose ${l ? l.n.replace(/ Giant$/, "") : x.n}</button></div></div></div>
-<div class="rail"><button class="nav" id="pv">◀ Prev</button><div class="strip">${SP.map((q, i) => `<div class="th ${i == S.s ? "on" : ""}" data-i="${i}">${ch(look(i), "40 30 220 220")}<em>${q.n}</em></div>`).join("")}</div><button class="nav" id="nx">Next ▶</button><button class="nav" id="al">▦ View all</button></div>`;
+<div class="rail"><div class="strip">${SP.map((q, i) => `<div class="th ${i == S.s ? "on" : ""}" data-i="${i}">${ch(look(i), "40 30 220 220")}<em>${q.n}</em></div>`).join("")}</div><button class="nav" id="nx">Next ▶</button><button class="nav" id="al">▦ View all</button></div>`;
   document.querySelectorAll("[data-l]").forEach(
     (b) =>
       (b.onclick = () => {
@@ -116,8 +116,6 @@ function sp() {
         sp();
       }),
   );
-  $("pv").onclick = () => go(-1);
-  $("nx").onclick = () => go(1);
   $("al").onclick = all;
   $("ex").onclick = exm;
   $("pk").onclick = () => {
@@ -126,6 +124,7 @@ function sp() {
     rd();
     sm();
   };
+  $("nx").onclick = $("pk").onclick;
   const o = document.querySelector(".th.on");
   o && o.scrollIntoView({ inline: "center", block: "nearest" });
 }
@@ -146,20 +145,14 @@ function steps() {
     },
   ).join("")}</div></div>`;
 }
-function keep() {
-  const n = document.querySelector(".cl");
-  return n ? n.scrollTop : 0;
-}
 function bg() {
-  const b = BG[S.b],
-    y = keep();
+  const b = BG[S.b];
   $("v").innerHTML =
     `<div class="stage"><div class="col" style="align-items:center">${steps()}<div class="cl">${BG.map((q, i) => `<div class="ci ${i == S.b ? "on" : ""}" data-i="${i}" title="${q[0]}">${q[1]}</div>`).join("")}</div></div>
 <div class="hero">${ch(look())}<div class="badge">${b[1]}</div></div>
 <div class="col"><div class="p"><div class="k">Background</div><h2>${b[0]}</h2><p>${b[2]}</p><div class="k">Ability scores · +2/+1 or +1/+1/+1</div><div class="boxes" style="grid-template-columns:repeat(3,1fr)">${b[3].map((a) => box(a, "Ability", "#f3c26b")).join("")}</div>
 <ul class="tr" style="max-height:none"><li><b>Origin Feat</b>${q("Origin Feat")} · ${b[4]}</li><li><b>Skills</b> · ${b[5].join(", ")}</li><li><b>Tool</b> · ${b[6]}</li></ul><button class="cta" id="pk">Choose ${b[0]}</button></div></div></div>
 <div class="rail"><button class="nav" id="pv">◀ Prev</button><button class="nav" id="nx">Next ▶</button></div>`;
-  document.querySelector(".cl").scrollTop = y;
   document.querySelectorAll(".ci").forEach(
     (q) =>
       (q.onclick = () => {
@@ -167,19 +160,21 @@ function bg() {
         bg();
       }),
   );
-  $("pv").onclick = () => go(-1);
-  $("nx").onclick = () => go(1);
   $("pk").onclick = () => {
     S.p.bg = b[0];
     S.t = 3;
     rd();
     sm();
   };
+  $("pv").onclick = () => {
+    S.t = 1;
+    rd();
+  };
+  $("nx").onclick = $("pk").onclick;
 }
 function cl() {
   const c = CL[S.c],
     f = F[c[0]],
-    y = keep(),
     [die, role] = c[4].split(" · ");
   $("v").innerHTML =
     `<div class="stage"><div class="col" style="align-items:center">${steps()}<div class="cl">${CL.map((q, i) => `<div class="ci ${i == S.c ? "on" : ""}" data-i="${i}" title="${q[0]}">${q[1]}</div>`).join("")}</div></div>
@@ -190,7 +185,6 @@ function cl() {
 <div class="row"><div class="lvl"><button id="lm">−</button><span>Level ${S.lv}</span><button id="lp">+</button></div><button class="nav" id="lu">View level up traits</button></div>
 <button class="cta" id="pk">Choose ${c[0]}</button></div></div></div>
 <div class="rail"><button class="nav" id="pv">◀ Prev</button><button class="nav" id="nx">Next ▶</button></div>`;
-  document.querySelector(".cl").scrollTop = y;
   document.querySelectorAll(".ci").forEach(
     (q) =>
       (q.onclick = () => {
@@ -224,14 +218,17 @@ function cl() {
       .join("");
     $("m2").classList.add("on");
   };
-  $("pv").onclick = () => go(-1);
-  $("nx").onclick = () => go(1);
   $("pk").onclick = () => {
     S.p.cl = c[0];
     sm();
     S.t = 4;
     rd();
   };
+  $("pv").onclick = () => {
+    S.t = 2;
+    rd();
+  };
+  $("nx").onclick = $("pk").onclick;
 }
 function go(d) {
   if (S.t > 3) return;
@@ -572,19 +569,6 @@ function exm() {
   );
   $("m2").classList.add("on");
 }
-let lk = 0;
-addEventListener(
-  "wheel",
-  (e) => {
-    if (lk || !e.target.closest(".hero,.strip")) return;
-    if (Math.abs(e.deltaY) > 40) {
-      lk = 1;
-      go(e.deltaY > 0 ? 1 : -1);
-      setTimeout(() => (lk = 0), 300);
-    }
-  },
-  { passive: true },
-);
 addEventListener("keydown", (e) => {
   if (e.key == "ArrowRight") go(1);
   if (e.key == "ArrowLeft") go(-1);

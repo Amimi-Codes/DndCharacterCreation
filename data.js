@@ -401,7 +401,7 @@ const ST = [
     "Class",
     "Skills",
     "Spells",
-    "Ability Score",
+    "Abilities",
     "Equipment",
     "Summary",
   ],

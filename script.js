@@ -550,27 +550,44 @@ function exm() {
     (b) =>
       (b.onclick = () => {
         const e = EX[+b.dataset.x];
-        S.s = SP.findIndex((s) => s.n == e[1]);
-        S.l[S.s] = e[2];
-        S.b = BG.findIndex((k) => k[0] == e[3]);
-        S.c = CL.findIndex((k) => k[0] == e[4]);
-        S.sel = {};
-        S.ks = {};
-        S.eq = 0;
-        recSkills();
-        recSpells();
-        recAb();
-        S.p = { sp: spName(), bg: e[3], cl: e[4], ab: 1 };
-        S.t = 8;
-        $("m2").classList.remove("on");
-        rd();
-        sm();
+        build(
+          SP.findIndex((s) => s.n == e[1]),
+          e[2],
+          BG.findIndex((k) => k[0] == e[3]),
+          CL.findIndex((k) => k[0] == e[4]),
+        );
       }),
   );
   $("m2").classList.add("on");
+}
+// Fill every step with recommended picks and jump to the summary
+function build(si, li, bi, ci) {
+  S.s = si;
+  S.l[si] = li;
+  S.b = bi;
+  S.c = ci;
+  S.sel = {};
+  S.ks = {};
+  S.eq = 0;
+  recSkills();
+  recSpells();
+  recAb();
+  S.p = { sp: spName(), bg: BG[bi][0], cl: CL[ci][0], ab: 1 };
+  S.t = 8;
+  $("m2").classList.remove("on");
+  rd();
+  sm();
+}
+// Bardic Inspiration: a random character, ready to play
+function quick() {
+  const r = (n) => Math.floor(Math.random() * n),
+    si = r(SP.length);
+  build(si, r(SP[si].L.length || 1), r(BG.length), r(CL.length));
 }
 addEventListener("keydown", (e) => {
   if (e.key == "ArrowRight") go(1);
   if (e.key == "ArrowLeft") go(-1);
 });
 rd();
+if (location.hash == "#ready") exm();
+if (location.hash == "#quick") quick();

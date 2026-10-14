@@ -890,3 +890,26 @@ a.nav.back {
   text-align: center;
   white-space: normal;
 }
+.lvls {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.lvls .qa {
+  text-align: center;
+  padding: 10px 4px;
+}
+.lvls b {
+  display: block;
+  font: 800 22px Cinzel;
+}
+.lvls small {
+  font-size: 9px;
+  color: var(--g);
+}
+@media (max-width: 900px) {
+  .lvls {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

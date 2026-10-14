@@ -918,3 +918,35 @@ const EX = [
   ["The tank", "Human", 0, "Soldier", "Fighter", "Heavy armor and a big sword. Simple and sturdy."],
   ["The blaster", "Tiefling", 2, "Charlatan", "Warlock", "Throws eldritch blasts and talks their way out of trouble."],
 ];
+// Bardic Inspiration quick build. Each answer: t label, e icon, h hint,
+// c points toward classes, b backgrounds to pick from, s species to pick from.
+const QZ = [
+  ["What role do you want to play in the party?", [
+    { t: "Healer", e: "💚", h: "Keep your friends standing.", c: { Cleric: 3, Druid: 2, Paladin: 2, Bard: 1 } },
+    { t: "Tank", e: "🛡️", h: "Stand in front and take the hits.", c: { Fighter: 3, Barbarian: 3, Paladin: 2 } },
+    { t: "Damage dealer", e: "⚔️", h: "Take enemies down fast.", c: { Rogue: 3, Monk: 2, Ranger: 2, Fighter: 1 } },
+    { t: "Spellcaster", e: "🔥", h: "Bend magic to blast and control.", c: { Wizard: 3, Sorcerer: 3, Warlock: 3 } },
+    { t: "Support", e: "🎶", h: "Make everyone else better.", c: { Bard: 3, Cleric: 1, Druid: 1 } },
+    { t: "Scout", e: "🧭", h: "Find the way and spot danger first.", c: { Ranger: 3, Rogue: 2, Monk: 1 } },
+  ]],
+  ["How do you like to fight?", [
+    { t: "Up close", e: "🪓", h: "Weapons in hand, right in the action.", c: { Barbarian: 2, Fighter: 2, Paladin: 2, Monk: 2, Rogue: 1 } },
+    { t: "Fists and speed", e: "🥋", h: "Martial arts, no weapon needed.", c: { Monk: 4 } },
+    { t: "From a distance", e: "🏹", h: "Bows and arrows, safely out of reach.", c: { Ranger: 2, Rogue: 1, Fighter: 1, Warlock: 1 } },
+    { t: "With magic", e: "✨", h: "Spells, curses and miracles.", c: { Wizard: 2, Sorcerer: 2, Warlock: 2, Druid: 2, Cleric: 1, Bard: 1 } },
+  ]],
+  ["What do you enjoy most outside of combat?", [
+    { t: "Talking to people", e: "🗣️", h: "Charming, persuading, bluffing.", c: { Bard: 2, Paladin: 2, Sorcerer: 1, Warlock: 1 }, b: ["Charlatan", "Noble", "Entertainer", "Merchant"] },
+    { t: "Exploring the wild", e: "🌲", h: "Tracking, foraging, surviving.", c: { Druid: 2, Ranger: 2, Barbarian: 1 }, b: ["Guide", "Farmer", "Hermit", "Sailor"] },
+    { t: "Solving mysteries", e: "📜", h: "Lore, puzzles and ancient secrets.", c: { Wizard: 2, Cleric: 1, Warlock: 1 }, b: ["Sage", "Acolyte", "Scribe", "Artisan"] },
+    { t: "Sneaking around", e: "🗝️", h: "Locks, shadows and sticky fingers.", c: { Rogue: 2, Monk: 1 }, b: ["Criminal", "Wayfarer", "Charlatan", "Guard"] },
+  ]],
+  ["What kind of hero do you picture?", [
+    { t: "Tough and sturdy", e: "⛰️", h: "Dwarf, Goliath or Orc.", s: ["Dwarf", "Goliath", "Orc"] },
+    { t: "Graceful and fey", e: "🌙", h: "An elf, touched by old magic.", s: ["Elf"] },
+    { t: "Small and clever", e: "🍀", h: "Gnome or Halfling.", s: ["Gnome", "Halfling"] },
+    { t: "Born of magic", e: "🐉", h: "Dragonborn or Tiefling.", s: ["Dragonborn", "Tiefling"] },
+    { t: "Down to earth", e: "🧑", h: "A human, adaptable and ambitious.", s: ["Human"] },
+    { t: "Surprise me", e: "🎲", h: "Let fate decide.", s: [] },
+  ]],
+];

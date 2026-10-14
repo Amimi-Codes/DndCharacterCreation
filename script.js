@@ -583,7 +583,7 @@ function quiz(i = 0, ans = []) {
   const [q, opts] = QZ[i];
   $("m2t").textContent = "Bardic Inspiration";
   $("m2b").innerHTML =
-    `<div class="note">Question ${i + 1} of ${QZ.length}</div><div class="bar"><i style="width:${(i / QZ.length) * 100}%"></i></div><h3 class="qq">${q}</h3><div class="sg">${opts.map((o, k) => `<button class="sc qa" data-q="${k}"><div class="sh"><b>${o.e} ${o.t}</b></div><p>${o.h}</p></button>`).join("")}</div>${i ? '<button class="nav" id="qb" style="margin-top:14px">◀ Back</button>' : ""}`;
+    `<div class="note">Question ${i + 1} of ${QZ.length}</div><div class="bar"><i style="width:${(i / QZ.length) * 100}%"></i></div><h3 class="qq">${q}</h3><div class="sg">${opts.map((o, k) => `<button class="sc qa" data-q="${k}"><div class="sh"><b>${o.e} ${o.t}</b></div>${o.h ? `<p>${o.h}</p>` : ""}</button>`).join("")}</div>${i ? '<button class="nav" id="qb" style="margin-top:14px">◀ Back</button>' : ""}`;
   document.querySelectorAll("[data-q]").forEach(
     (b) => (b.onclick = () => quiz(i + 1, [...ans, +b.dataset.q])),
   );
@@ -595,9 +595,9 @@ function fromQuiz(ans) {
   const pick = ans.map((k, i) => QZ[i][1][k]),
     pts = {},
     r = (n) => Math.floor(Math.random() * n);
-  // party role counts double; ties go to the earlier answer
+  // some questions count more (party role); ties go to the earlier answer
   pick.forEach((o, i) => {
-    for (const c in o.c || {}) pts[c] = (pts[c] || 0) + o.c[c] * (i ? 1 : 2);
+    for (const c in o.c || {}) pts[c] = (pts[c] || 0) + o.c[c] * (QZ[i][2] || 1);
   });
   const cn = Object.keys(pts).sort((x, y) => pts[y] - pts[x])[0],
     ci = CL.findIndex((c) => c[0] == cn),

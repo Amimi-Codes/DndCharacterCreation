@@ -6,51 +6,333 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>Mimi's D&D Character Builder</title>
+    <title>Origin · Choose your path</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Nunito:wght@400;600;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <style>
+      @font-face {
+        font-family: "PixelPurl";
+        src: url("assets/fonts/PixelPurl.ttf") format("truetype");
+        font-display: swap;
+      }
+      /* Personal-use licence, see assets/fonts/WindrawAesthetic-LICENSE.txt */
+      @font-face {
+        font-family: "Windraw Aesthetic";
+        src: url("assets/fonts/WindrawAesthetic-Italic.ttf") format("truetype");
+        font-display: swap;
+      }
+      :root {
+        /* The tavern is 240 x 180 pixel-art units. --w is how wide it's drawn,
+           --u is one art pixel, so everything below is placed in art pixels. */
+        --w: max(100vw, 133.34svh);
+        --u: calc(var(--w) / 240);
+        --gold: #e8b45a;
+        --parch: #f4ead6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #0b0806;
+        color: var(--parch);
+        font-family: "DM Sans", system-ui, sans-serif;
+      }
+      .scene {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: var(--w);
+        height: calc(var(--w) * 0.75);
+        translate: -50% 0;
+      }
+      .scene img.art {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+      }
+      .shade {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse 60% 45% at 50% 22%, #000b, transparent 70%),
+          radial-gradient(ellipse at 50% 60%, transparent 55%, #000a);
+      }
+      .title {
+        position: fixed;
+        top: clamp(1.5rem, 7vh, 5rem);
+        left: 50%;
+        translate: -50% 0;
+        width: min(100% - 2rem, 760px);
+        text-align: center;
+        z-index: 2;
+      }
+      h1 {
+        margin: 0;
+        font: 400 clamp(4rem, 13vw, 9rem) / 1.1 "PixelPurl", monospace;
+        letter-spacing: 0.04em;
+        text-shadow: 6px 6px 0 #3a0a06;
+      }
+      .tag {
+        margin: -0.4rem 0 1rem;
+        font: clamp(1.6rem, 4vw, 2.6rem) / 1.2 "Windraw Aesthetic", cursive;
+        color: var(--gold);
+        text-shadow: 0 2px 10px #000;
+      }
+      .deck {
+        margin: 0;
+        font-size: clamp(1rem, 1.6vw, 1.15rem);
+        text-shadow: 0 2px 8px #000;
+      }
+
+      /* ---- portals: --x is the table's centre, --y its top, in art pixels ---- */
+      .portal {
+        position: absolute;
+        left: calc(var(--x) * var(--u));
+        top: calc(var(--y) * var(--u));
+        width: calc(22 * var(--u));
+        translate: -50% -100%;
+        z-index: 3;
+        display: grid;
+        justify-items: center;
+        text-decoration: none;
+        color: inherit;
+        outline: 0;
+      }
+      .portal .gate {
+        width: 100%;
+        image-rendering: pixelated;
+        animation: bob 2.6s ease-in-out infinite;
+        transition: filter 0.2s;
+        filter: drop-shadow(0 0 calc(3 * var(--u)) var(--glow));
+      }
+      .portal:nth-of-type(2) .gate {
+        animation-delay: -0.9s;
+      }
+      .portal:nth-of-type(3) .gate {
+        animation-delay: -1.7s;
+      }
+      .portal:hover .gate,
+      .portal:focus-visible .gate {
+        filter: drop-shadow(0 0 calc(6 * var(--u)) var(--glow)) brightness(1.2);
+      }
+      @keyframes bob {
+        50% {
+          translate: 0 calc(-2 * var(--u));
+        }
+      }
+      /* scroll label hangs over the table's front edge */
+      .label {
+        position: absolute;
+        top: calc(100% + 2 * var(--u));
+        left: 50%;
+        translate: -50% 0;
+        width: calc(60 * var(--u));
+        aspect-ratio: 60 / 13;
+        display: grid;
+        place-content: center;
+        text-align: center;
+        background: url("assets/scroll.svg") center / 100% 100% no-repeat;
+        image-rendering: pixelated;
+        color: #4a2208;
+        line-height: 1.05;
+        padding-bottom: 3%;
+      }
+      .label b {
+        font: 400 max(calc(4.2 * var(--u)), 12px) "PixelPurl", monospace;
+      }
+      .label small {
+        font: 700 max(calc(2.4 * var(--u)), 8.5px) "DM Sans", sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #7a3a10;
+      }
+      .portal:focus-visible .label {
+        outline: 3px dashed var(--gold);
+        outline-offset: 4px;
+      }
+      @media (max-aspect-ratio: 4/5) {
+        /* phones only see the middle table, so the portals line up across it */
+        .portal {
+          top: calc(132 * var(--u));
+        }
+        .portal.l {
+          left: calc(92 * var(--u));
+        }
+        .portal.r {
+          left: calc(148 * var(--u));
+        }
+        .label {
+          width: min(31vw, 130px);
+          white-space: nowrap;
+        }
+        .label b {
+          font-size: min(2.9vw, 12px);
+        }
+        .label small {
+          display: none;
+        }
+      }
+      @media (max-height: 520px) {
+        .title {
+          top: 0.5rem;
+        }
+        h1 {
+          font-size: 3rem;
+        }
+        .tag,
+        .deck {
+          display: none;
+        }
+      }
+
+      /* ---- soul: sits where the case study's CTA was, then flies to a portal ---- */
+      .soul {
+        --sx: 120;
+        --sy: 160;
+        position: absolute;
+        left: calc(var(--sx) * var(--u));
+        top: calc(var(--sy) * var(--u));
+        width: max(calc(13 * var(--u)), 34px);
+        translate: -50% -50%;
+        z-index: 4;
+        pointer-events: none;
+        transition:
+          left 0.9s cubic-bezier(0.5, 0, 0.3, 1),
+          top 0.9s cubic-bezier(0.6, -0.4, 0.4, 1),
+          scale 0.9s;
+      }
+      .soul img {
+        width: 100%;
+        image-rendering: pixelated;
+        filter: drop-shadow(0 0 calc(4 * var(--u)) #4ac8f0)
+          drop-shadow(0 0 calc(10 * var(--u)) #1e8ad8aa);
+        animation: float 2s ease-in-out infinite;
+      }
+      @keyframes float {
+        50% {
+          translate: 0 calc(-3 * var(--u));
+          rotate: 3deg;
+        }
+      }
+      .soul.go {
+        scale: 0.5;
+      }
+      .hint {
+        position: absolute;
+        left: 50%;
+        bottom: calc(4 * var(--u));
+        translate: -50% 0;
+        z-index: 4;
+        font: 800 0.72rem "DM Sans", sans-serif;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        text-shadow: 0 2px 4px #000;
+      }
+
+      /* ---- flash on the way through ---- */
+      .flash {
+        position: fixed;
+        inset: 0;
+        z-index: 9;
+        pointer-events: none;
+        opacity: 0;
+        background: radial-gradient(circle at var(--fx) var(--fy), #fff 0, var(--glow) 35%, #fff 70%);
+      }
+      .flash.on {
+        animation: flash 0.75s steps(1) forwards;
+      }
+      @keyframes flash {
+        0% { opacity: 0.9; }
+        15% { opacity: 0.2; }
+        30% { opacity: 1; }
+        45% { opacity: 0.4; }
+        60%, 100% { opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .portal .gate,
+        .soul img {
+          animation: none;
+        }
+        .soul {
+          transition: none;
+        }
+        .flash.on {
+          animation: none;
+          opacity: 1;
+          transition: opacity 0.3s;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="app">
-      <div id="v"></div>
-      <div class="sum" id="sum"></div>
+    <div class="scene">
+      <img class="art" src="assets/tavern-back.svg" alt="" />
+      <img class="art" src="assets/tavern-front.svg" alt="" />
+
+      <a class="portal l" href="builder.html" style="--x: 33; --y: 138; --glow: #e6ecf8">
+        <img class="gate" src="assets/portal-white.svg" alt="" />
+        <span class="label"><b>Start from scratch</b><small>Build every choice</small></span>
+      </a>
+      <a class="portal" href="builder.html#ready" style="--x: 120; --y: 132; --glow: #8a5ae0">
+        <img class="gate" src="assets/portal-purple.svg" alt="" />
+        <span class="label"><b>Use ready-made</b><small>Pick a hero &amp; tweak</small></span>
+      </a>
+      <a class="portal r" href="builder.html#quick" style="--x: 207; --y: 138; --glow: #e0404e">
+        <img class="gate" src="assets/portal-red.svg" alt="" />
+        <span class="label"><b>Bardic Inspiration</b><small>Quick build</small></span>
+      </a>
+
+      <div class="soul" id="soul"><img src="assets/soul.svg" alt="" /></div>
+      <p class="hint">Choose a portal</p>
     </div>
-    <div class="modal" id="m">
-      <div class="sheet">
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <h2>All Species</h2>
-          <button class="nav" id="x">✕ Close</button>
-        </div>
-        <div class="grid" id="gr"></div>
-      </div>
-    </div>
-    <div class="modal" id="m2">
-      <div class="sheet">
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <h2 id="m2t"></h2>
-          <button class="nav" id="x2">✕ Close</button>
-        </div>
-        <div id="m2b"></div>
-      </div>
-    </div>
-    <script src="data.js"></script>
-    <script src="spellsData.js"></script>
-    <script src="spellManager.js"></script>
-    <script src="script.js"></script>
+    <div class="shade"></div>
+    <header class="title">
+      <h1>Origin</h1>
+      <p class="tag">a character creation tool</p>
+      <p class="deck">Every hero starts somewhere. Where will yours begin?</p>
+    </header>
+    <div class="flash" id="flash"></div>
+    <script>
+      // Click a portal: the soul flies into it, the screen flashes, then we go through.
+      const soul = document.getElementById("soul"),
+        flash = document.getElementById("flash"),
+        calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let busy = false;
+      document.querySelectorAll(".portal").forEach((p) =>
+        p.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (busy) return;
+          busy = true;
+          const st = getComputedStyle(p),
+            gate = p.querySelector(".gate").getBoundingClientRect();
+          soul.style.setProperty("--sx", st.getPropertyValue("--x"));
+          soul.style.setProperty("--sy", +st.getPropertyValue("--y") - 12);
+          soul.classList.add("go");
+          flash.style.setProperty("--glow", st.getPropertyValue("--glow"));
+          flash.style.setProperty("--fx", gate.left + gate.width / 2 + "px");
+          flash.style.setProperty("--fy", gate.top + gate.height / 2 + "px");
+          setTimeout(() => flash.classList.add("on"), calm ? 0 : 850);
+          setTimeout(() => (location.href = p.href), calm ? 300 : 1600);
+        }),
+      );
+      // Coming back with the browser's Back button: reset the scene
+      addEventListener("pageshow", () => {
+        busy = false;
+        soul.style.removeProperty("--sx");
+        soul.style.removeProperty("--sy");
+        soul.classList.remove("go");
+        flash.classList.remove("on");
+      });
+    </script>
   </body>
 </html>

@@ -968,10 +968,12 @@ const QZ = [
     { t: "Life's a song.", e: "🎵", h: "", c: { Bard: 2 } },
     { t: "Discipline is freedom.", e: "☯️", h: "", c: { Monk: 2 } },
   ]],
-  ["How many choices do you want to make while playing?", [
-    { t: "Keep it simple", e: "🙂", h: "Few rules to track. Hit things, have fun.", c: { Fighter: 2, Barbarian: 2, Rogue: 1 } },
-    { t: "Some choices", e: "🤔", h: "A few tricks and spells to juggle.", c: { Ranger: 1, Paladin: 1, Monk: 1, Warlock: 1, Sorcerer: 1, Rogue: 1 } },
-    { t: "All the options", e: "🤓", h: "Big spell lists and lots to plan.", c: { Wizard: 2, Cleric: 2, Druid: 2, Bard: 1 } },
+  // How much there is to juggle on your turn: mostly attacking, a few
+  // special moves or spells, or a big prepared spell list
+  ["When it's your turn in a fight, what sounds most fun?", [
+    { t: "Just attack", e: "🙂", h: "Swing or shoot every turn. Easy to learn, still powerful.", c: { Fighter: 2, Barbarian: 2, Rogue: 1 } },
+    { t: "Pick from a few special moves", e: "🤔", h: "A handful of tricks or spells to choose between.", c: { Ranger: 1, Paladin: 1, Monk: 1, Warlock: 1, Sorcerer: 1, Rogue: 1 } },
+    { t: "Choose from a big spellbook", e: "🤓", h: "Lots of spells to pick from and plan ahead each day.", c: { Wizard: 2, Cleric: 2, Druid: 2, Bard: 1 } },
   ]],
   ["Where did you grow up?", [
     { t: "A temple", e: "🕯️", h: "Raised among priests and prayers.", b: ["Acolyte", "Hermit", "Scribe"] },

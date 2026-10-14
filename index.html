@@ -241,6 +241,19 @@
         pointer-events: none;
         image-rendering: pixelated;
       }
+      /* black-out before the next page */
+      .fade {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+        background: #000;
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+      }
+      .fade.on {
+        opacity: 1;
+      }
       .soul.gone {
         opacity: 0;
         transition: opacity 0.1s;
@@ -283,9 +296,11 @@
       <p class="deck">Every hero starts somewhere.</p>
       <p class="deck">Where will yours begin?</p>
     </header>
+    <div class="fade" id="fade"></div>
     <script>
       // Click a portal: the soul flies into it, bursts into scattering pixels, then we go through.
       const soul = document.getElementById("soul"),
+        fade = document.getElementById("fade"),
         calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
       let busy = false;
       document.querySelectorAll(".portal").forEach((p) =>
@@ -308,7 +323,8 @@
                 ),
               850,
             );
-          setTimeout(() => (location.href = p.href), calm ? 300 : 2300);
+          setTimeout(() => fade.classList.add("on"), calm ? 0 : 1800);
+          setTimeout(() => (location.href = p.href), calm ? 550 : 2350);
         }),
       );
       function burst(x, y, glow) {
@@ -348,6 +364,7 @@
         soul.style.removeProperty("--sx");
         soul.style.removeProperty("--sy");
         soul.classList.remove("go", "gone");
+        fade.classList.remove("on");
         document.querySelectorAll(".bit").forEach((b) => b.remove());
       });
     </script>

@@ -234,24 +234,16 @@
         text-shadow: 0 2px 4px #000;
       }
 
-      /* ---- flash on the way through ---- */
-      .flash {
+      /* ---- particles the soul bursts into ---- */
+      .bit {
         position: fixed;
-        inset: 0;
         z-index: 9;
         pointer-events: none;
+        image-rendering: pixelated;
+      }
+      .soul.gone {
         opacity: 0;
-        background: radial-gradient(circle at var(--fx) var(--fy), #fff 0, var(--glow) 35%, #fff 70%);
-      }
-      .flash.on {
-        animation: flash 0.75s steps(1) forwards;
-      }
-      @keyframes flash {
-        0% { opacity: 0.9; }
-        15% { opacity: 0.2; }
-        30% { opacity: 1; }
-        45% { opacity: 0.4; }
-        60%, 100% { opacity: 1; }
+        transition: opacity 0.1s;
       }
       @media (prefers-reduced-motion: reduce) {
         .portal .gate,
@@ -260,11 +252,6 @@
         }
         .soul {
           transition: none;
-        }
-        .flash.on {
-          animation: none;
-          opacity: 1;
-          transition: opacity 0.3s;
         }
       }
     </style>
@@ -296,11 +283,9 @@
       <p class="deck">Every hero starts somewhere.</p>
       <p class="deck">Where will yours begin?</p>
     </header>
-    <div class="flash" id="flash"></div>
     <script>
-      // Click a portal: the soul flies into it, the screen flashes, then we go through.
+      // Click a portal: the soul flies into it, bursts into scattering pixels, then we go through.
       const soul = document.getElementById("soul"),
-        flash = document.getElementById("flash"),
         calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
       let busy = false;
       document.querySelectorAll(".portal").forEach((p) =>
@@ -313,20 +298,57 @@
           soul.style.setProperty("--sx", st.getPropertyValue("--x"));
           soul.style.setProperty("--sy", +st.getPropertyValue("--y") - 12);
           soul.classList.add("go");
-          flash.style.setProperty("--glow", st.getPropertyValue("--glow"));
-          flash.style.setProperty("--fx", gate.left + gate.width / 2 + "px");
-          flash.style.setProperty("--fy", gate.top + gate.height / 2 + "px");
-          setTimeout(() => flash.classList.add("on"), calm ? 0 : 850);
-          setTimeout(() => (location.href = p.href), calm ? 300 : 1600);
+          if (!calm)
+            setTimeout(
+              () =>
+                burst(
+                  gate.left + gate.width / 2,
+                  gate.top + gate.height * 0.4,
+                  st.getPropertyValue("--glow").trim(),
+                ),
+              850,
+            );
+          setTimeout(() => (location.href = p.href), calm ? 300 : 2300);
         }),
       );
+      function burst(x, y, glow) {
+        soul.classList.add("gone");
+        const cols = ["#fff", glow, glow, "#4ac8f0", "#a8f0f0"],
+          reach = Math.max(innerWidth, innerHeight) * 0.6;
+        for (let i = 0; i < 140; i++) {
+          const b = document.createElement("i"),
+            a = Math.random() * Math.PI * 2,
+            d = reach * (0.15 + Math.random() * 0.85),
+            z = 6 + Math.round(Math.random() * 3) * 4,
+            c = cols[i % cols.length];
+          b.className = "bit";
+          b.style.cssText = `left:${x - z / 2}px;top:${y - z / 2}px;width:${z}px;height:${z}px;background:${c};box-shadow:0 0 ${z * 1.5}px ${c}`;
+          document.body.append(b);
+          b.animate(
+            [
+              { transform: "translate(0,0) scale(1)", opacity: 1 },
+              { opacity: 1, offset: 0.6 },
+              {
+                transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d + 40}px) scale(.3)`,
+                opacity: 0,
+              },
+            ],
+            {
+              duration: 1100 + Math.random() * 700,
+              delay: Math.random() * 120,
+              easing: "cubic-bezier(.2,.6,.35,1)",
+              fill: "forwards",
+            },
+          );
+        }
+      }
       // Coming back with the browser's Back button: reset the scene
       addEventListener("pageshow", () => {
         busy = false;
         soul.style.removeProperty("--sx");
         soul.style.removeProperty("--sy");
-        soul.classList.remove("go");
-        flash.classList.remove("on");
+        soul.classList.remove("go", "gone");
+        document.querySelectorAll(".bit").forEach((b) => b.remove());
       });
     </script>
   </body>

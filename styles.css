@@ -874,3 +874,19 @@ h2 {
     grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
   }
 }
+/* quick-build questions */
+.qq {
+  font: 800 22px Cinzel;
+  margin: 14px 0 4px;
+}
+.qa {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+}
+a.nav.back {
+  text-decoration: none;
+  text-align: center;
+  white-space: normal;
+}

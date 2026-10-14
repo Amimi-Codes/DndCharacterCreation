@@ -97,7 +97,7 @@ function sp() {
     res = (l && l.r) || x.r || "—";
   const tr = [...x.tr, ...((l && l.x) || [])];
   $("v").innerHTML =
-    `<div class="stage"><div class="col">${steps()}<button class="nav" id="ex">★ New here? Start from a ready-made character</button><div class="p" style="flex:1"><div class="k">Heritage</div><h2>${x.n}</h2><p>${x.s}</p>${l && l.d ? `<p><b style="color:var(--g)">${l.n}.</b> ${l.d}</p>` : ""}<div class="note">${x.L.length ? x.lh + ": choose one lineage →" : "No lineages. Every " + x.n + " shares the same traits."}</div></div></div>
+    `<div class="stage"><div class="col">${steps()}<a class="nav back" href="index.html">◀ Want a different start? Back to the tavern</a><div class="p" style="flex:1"><div class="k">Heritage</div><h2>${x.n}</h2><p>${x.s}</p>${l && l.d ? `<p><b style="color:var(--g)">${l.n}.</b> ${l.d}</p>` : ""}<div class="note">${x.L.length ? x.lh + ": choose one lineage →" : "No lineages. Every " + x.n + " shares the same traits."}</div></div></div>
 <div class="hero">${ch(look())}</div>
 <div class="col"><div class="p"><div class="k">At a glance</div><div class="boxes">${box(spd + " ft", "Speed", "#f3c26b")}${box(x.z.replace(" or ", " / "), "Size", "#e0793a")}${box(dv ? dv + " ft" : "—", "Darkvision", "#9fe0d0")}${box(res, "Resist", "#e58fb6")}</div></div>
 <div class="p" style="flex:1">${x.L.length ? `<div class="k">${x.lh}</div><div class="chips">${x.L.map((q, i) => `<button class="chip ${i == li ? "on" : ""}" data-l="${i}">${q.n}</button>`).join("")}</div>` : ""}<div class="k">Traits</div><ul class="tr">${tr.map((t) => `<li><b>${t[0]}</b>${t[1] ? " · " + t[1] : ""}</li>`).join("")}</ul><button class="cta" id="pk">Choose ${l ? l.n.replace(/ Giant$/, "") : x.n}</button></div></div></div>
@@ -117,7 +117,6 @@ function sp() {
       }),
   );
   $("al").onclick = all;
-  $("ex").onclick = exm;
   $("pk").onclick = () => {
     S.p.sp = spName();
     S.t = 2;
@@ -578,11 +577,36 @@ function build(si, li, bi, ci) {
   rd();
   sm();
 }
-// Bardic Inspiration: a random character, ready to play
-function quick() {
-  const r = (n) => Math.floor(Math.random() * n),
-    si = r(SP.length);
-  build(si, r(SP[si].L.length || 1), r(BG.length), r(CL.length));
+// Bardic Inspiration: a few questions, then a character built from the answers
+function quiz(i = 0, ans = []) {
+  if (i == QZ.length) return build(...fromQuiz(ans));
+  const [q, opts] = QZ[i];
+  $("m2t").textContent = "Bardic Inspiration";
+  $("m2b").innerHTML =
+    `<div class="note">Question ${i + 1} of ${QZ.length}</div><div class="bar"><i style="width:${(i / QZ.length) * 100}%"></i></div><h3 class="qq">${q}</h3><div class="sg">${opts.map((o, k) => `<button class="sc qa" data-q="${k}"><div class="sh"><b>${o.t}</b></div>${o.h ? `<p>${o.h}</p>` : ""}</button>`).join("")}</div>${i ? '<button class="nav" id="qb" style="margin-top:14px">◀ Back</button>' : ""}`;
+  document.querySelectorAll("[data-q]").forEach(
+    (b) => (b.onclick = () => quiz(i + 1, [...ans, +b.dataset.q])),
+  );
+  if (i) $("qb").onclick = () => quiz(i - 1, ans.slice(0, -1));
+  $("m2").classList.add("on");
+}
+// Answers -> [species, lineage, background, class] indexes
+function fromQuiz(ans) {
+  const pick = ans.map((k, i) => QZ[i][1][k]),
+    pts = {},
+    r = (n) => Math.floor(Math.random() * n);
+  // some questions count more (party role); ties go to the earlier answer
+  pick.forEach((o, i) => {
+    for (const c in o.c || {}) pts[c] = (pts[c] || 0) + o.c[c] * (QZ[i][2] || 1);
+  });
+  const cn = Object.keys(pts).sort((x, y) => pts[y] - pts[x])[0],
+    ci = CL.findIndex((c) => c[0] == cn),
+    bs = pick.find((o) => o.b).b,
+    bn = bs.find((n) => BG.find((b) => b[0] == n)[3].includes(CL[ci][3][0])) || bs[0],
+    ss = pick.find((o) => o.s).s,
+    sn = ss.length ? ss[r(ss.length)] : SP[r(SP.length)].n,
+    si = SP.findIndex((x) => x.n == sn);
+  return [si, r(SP[si].L.length || 1), BG.findIndex((b) => b[0] == bn), ci];
 }
 addEventListener("keydown", (e) => {
   if (e.key == "ArrowRight") go(1);
@@ -590,4 +614,4 @@ addEventListener("keydown", (e) => {
 });
 rd();
 if (location.hash == "#ready") exm();
-if (location.hash == "#quick") quick();
+if (location.hash == "#quick") quiz();

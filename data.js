@@ -397,8 +397,8 @@ const CL = [
 ];
 const ST = [
     "Species",
-    "Background",
     "Class",
+    "Background",
     "Skills",
     "Spells",
     "Abilities",
@@ -912,11 +912,21 @@ const GL = {
   "Passive Perception": "What you notice without trying. The DM compares it to hidden things and sneaking enemies.",
 };
 // Ready-made characters: [label, species, lineage index, background, class, blurb]
+// One per class: the classic species for it and the background whose
+// ability bonuses and origin feat suit it best.
 const EX = [
+  ["The berserker", "Orc", 0, "Soldier", "Barbarian", "Rages, shrugs off hits and refuses to go down."],
+  ["The minstrel", "Human", 0, "Entertainer", "Bard", "Inspires friends and mocks foes into misery."],
   ["The healer", "Dwarf", 0, "Acolyte", "Cleric", "Tough, hard to kill and keeps the party on their feet."],
-  ["The sneak", "Elf", 1, "Criminal", "Rogue", "Quick, quiet, and deals big damage from the shadows."],
+  ["The shapeshifter", "Elf", 1, "Hermit", "Druid", "Heals, tangles foes in vines and turns into beasts."],
   ["The tank", "Human", 0, "Soldier", "Fighter", "Heavy armor and a big sword. Simple and sturdy."],
+  ["The martial artist", "Human", 0, "Wayfarer", "Monk", "Fast, hard to pin down and lands a flurry of blows."],
+  ["The holy knight", "Dragonborn", 5, "Noble", "Paladin", "Shining armor, a sacred oath and smites that hit hard."],
+  ["The hunter", "Elf", 2, "Guide", "Ranger", "Tracks prey and picks enemies off with a longbow."],
+  ["The sneak", "Halfling", 0, "Criminal", "Rogue", "Lucky, quiet and deals big damage from the shadows."],
+  ["The dragon mage", "Dragonborn", 7, "Merchant", "Sorcerer", "Magic in the blood and fire on the breath."],
   ["The blaster", "Tiefling", 2, "Charlatan", "Warlock", "Throws eldritch blasts and talks their way out of trouble."],
+  ["The scholar", "Elf", 0, "Sage", "Wizard", "The biggest spellbook in the party and a plan for everything."],
 ];
 // Bardic Inspiration quick build: [question, answers, weight].
 // Each answer: t label, h hint, c points toward classes,

@@ -161,12 +161,12 @@ function bg() {
   );
   $("pk").onclick = () => {
     S.p.bg = b[0];
-    S.t = 3;
+    S.t = 4;
     rd();
     sm();
   };
   $("pv").onclick = () => {
-    S.t = 1;
+    S.t = 2;
     rd();
   };
   $("nx").onclick = $("pk").onclick;
@@ -220,11 +220,11 @@ function cl() {
   $("pk").onclick = () => {
     S.p.cl = c[0];
     sm();
-    S.t = 4;
+    S.t = 3;
     rd();
   };
   $("pv").onclick = () => {
-    S.t = 2;
+    S.t = 1;
     rd();
   };
   $("nx").onclick = $("pk").onclick;
@@ -234,7 +234,7 @@ function go(d) {
   if (S.t == 1) {
     S.s = (S.s + d + SP.length) % SP.length;
     sp();
-  } else if (S.t == 2) {
+  } else if (S.t == 3) {
     S.b = (S.b + d + BG.length) % BG.length;
     bg();
   } else {
@@ -259,10 +259,10 @@ function all() {
 }
 function sm() {
   $("sum").innerHTML =
-    `Your hero: <b>${S.p.sp || "…"}</b> · <b>${S.p.bg || "…"}</b> · <b>${S.p.cl || "…"}</b>${((n) => (n ? ` · <b>${n} spells</b>` : ""))(Object.values(S.sel).flat().length)}`;
+    `Your hero: <b>${S.p.sp || "…"}</b> · <b>${S.p.cl || "…"}</b> · <b>${S.p.bg || "…"}</b>${((n) => (n ? ` · <b>${n} spells</b>` : ""))(Object.values(S.sel).flat().length)}`;
 }
 function rd() {
-  [sp, bg, cl, skl, spl, abl, eqp, sheet][S.t - 1]();
+  [sp, cl, bg, skl, spl, abl, eqp, sheet][S.t - 1]();
 }
 $("x2").onclick = () => $("m2").classList.remove("on");
 $("v").addEventListener("click", (e) => {
@@ -375,10 +375,24 @@ function abl() {
   scrollTo(0, y);
 }
 // ---- Shared maths: final score, modifier, signed number ----
-const fin = (a) => S.ab.s[a] + bon()(a),
+// Ability Score Improvements at levels 4, 8 and 12 go +2 into the class's
+// main ability (max 20), then its second one.
+// ponytail: Fighter/Rogue bonus ASIs and feats instead of +2 are not modelled
+function asi(a) {
+  const [p1, p2] = CL[S.c][3],
+    base = (k) => S.ab.s[k] + bon()(k);
+  let left = 2 * ((S.lv >= 4) + (S.lv >= 8) + (S.lv >= 12)),
+    add = { [p1]: 0, [p2]: 0 };
+  for (const k of [p1, p2]) {
+    add[k] = Math.max(0, Math.min(left, 20 - base(k)));
+    left -= add[k];
+  }
+  return add[a] || 0;
+}
+const fin = (a) => S.ab.s[a] + bon()(a) + asi(a),
   md = (a) => Math.floor((fin(a) - 10) / 2),
   sg = (n) => (n >= 0 ? "+" : "") + n,
-  PB = 2;
+  pb = () => 2 + Math.floor((S.lv - 1) / 4);
 // ---- Skills ----
 function skSrc() {
   const c = CL[S.c][0],
@@ -480,7 +494,7 @@ function acOf(o) {
 const wmod = (w) =>
   w[3] == "S" ? md("STR") : w[3] == "D" ? md("DEX") : Math.max(md("STR"), md("DEX"));
 const atk = (w) =>
-  `<li><b>${w[0]}</b> · ${sg(wmod(w) + PB)} to hit · ${w[1]}${wmod(w) ? sg(wmod(w)) : ""} ${w[2]}</li>`;
+  `<li><b>${w[0]}</b> · ${sg(wmod(w) + pb())} to hit · ${w[1]}${wmod(w) ? sg(wmod(w)) : ""} ${w[2]}</li>`;
 function eqp() {
   const O = eqOpts(),
     y = scrollY;
@@ -512,11 +526,17 @@ function sheet() {
     l = x.L[S.l[S.s] || 0],
     o = eqOpts()[Math.min(S.eq, eqOpts().length - 1)],
     prof = skFix(),
+    PB = pb(),
+    die = +c[4].slice(1, 3),
     // ponytail: non-casters with a racial/feat spell use their best mental score; ask per source if it matters
     cs = cx[1] || ["INT", "WIS", "CHA"].sort((p, r) => md(r) - md(p))[0],
     dc = 8 + PB + md(cs),
     spells = [...new Set(Object.values(S.sel).flat())],
-    hp = +c[4].slice(1, 3) + md("CON") + (x.n == "Dwarf" ? 1 : 0),
+    // max die at level 1, the average (half + 1) each level after
+    hp =
+      die + md("CON") + (S.lv - 1) * (die / 2 + 1 + md("CON")) + (x.n == "Dwarf" ? S.lv : 0),
+    feats = F[c[0]].filter((t) => t[0] <= S.lv),
+    ups = [4, 8, 12].filter((n) => n <= S.lv),
     sk = (n) => md(SKL.find((s) => s[0] == n)[1]) + (prof.includes(n) ? PB : 0);
   const spl1 = (n) => {
     const z = SPL.find((s) => s[0] == n);
@@ -527,12 +547,14 @@ function sheet() {
     return `<li><b>${n}</b>${bits.length ? " · " + bits.join(" · ") : ""}</li>`;
   };
   $("v").innerHTML =
-    `<div class="stage"><div class="col">${steps()}<div class="p"><div class="k">Level 1 ${c[0]}</div><h2>${S.p.sp || spName()}</h2><p>${BG[S.b][0]} background</p><div class="k">Your first fight</div><p>${cx[2]}</p></div>
-<div class="p"><div class="k">Ability scores</div><div class="boxes" style="grid-template-columns:repeat(3,1fr)">${AB.map((a) => box(sg(md(a)), a + " " + fin(a), "#f3c26b")).join("")}</div><div class="k" style="margin-top:12px">Saving throws${q("Saving throws")}</div><ul class="tr" style="max-height:none">${AB.map((a) => `<li>${cx[0].includes(a) ? "<b>★ " + a + "</b>" : a} ${sg(md(a) + (cx[0].includes(a) ? PB : 0))}</li>`).join("")}</ul></div></div>
+    `<div class="stage"><div class="col">${steps()}<div class="p"><div class="k">Level ${S.lv} ${c[0]}</div><h2>${S.p.sp || spName()}</h2><p>${BG[S.b][0]} background</p><div class="k">Your first fight</div><p>${cx[2]}</p></div>
+<div class="p"><div class="k">Ability scores</div><div class="boxes" style="grid-template-columns:repeat(3,1fr)">${AB.map((a) => box(sg(md(a)), a + " " + fin(a), "#f3c26b")).join("")}</div>${ups.length ? `<div class="note">Includes +${ups.length * 2} from Ability Score Improvements at level ${ups.join(", ")}.</div>` : ""}<div class="k" style="margin-top:12px">Saving throws${q("Saving throws")}</div><ul class="tr" style="max-height:none">${AB.map((a) => `<li>${cx[0].includes(a) ? "<b>★ " + a + "</b>" : a} ${sg(md(a) + (cx[0].includes(a) ? PB : 0))}</li>`).join("")}</ul></div>
+<div class="p"><div class="k">Class features</div><ul class="tr" style="max-height:none">${feats.map((t) => `<li>${t[1]} <b>${t[2]}</b> · ${t[3]}</li>`).join("")}</ul></div></div>
 <div class="hero">${ch(look(S.s, c[5]))}<div class="badge">${c[1]}</div></div>
 <div class="col"><div class="p"><div class="k">Combat</div><div class="boxes">${box(hp, "Hit points", "#e58fb6")}${box(acOf(o), "Armor class", "#f3c26b")}${box(sg(md("DEX")), "Initiative", "#9fe0d0")}${box(((l && l.sp) || x.sp) + " ft", "Speed", "#e0793a")}</div>
-<ul class="tr" style="max-height:none">${o[3].map(atk).join("")}${spells.map(spl1).join("")}</ul>${spells.length ? `<div class="boxes" style="grid-template-columns:repeat(2,1fr)">${box(dc, "Spell save DC", "#9fe0d0")}${box(sg(md(cs) + PB), "Spell attack", "#e58fb6")}</div>` : ""}</div>
-<div class="p"><div class="k">Skills · ★ = proficient</div><div class="boxes" style="grid-template-columns:repeat(2,1fr)">${box(PB + "", "Proficiency", "#f3c26b")}${box(10 + sk("Perception"), "Passive Perception", "#9fe0d0")}</div><ul class="tr two" style="max-height:none">${SKL.map(([n]) => `<li>${prof.includes(n) ? `<b>★ ${n}</b>` : n} ${sg(sk(n))}</li>`).join("")}</ul>
+${o[3].length ? `<div class="k" style="margin-top:12px">Weapons</div><ul class="tr" style="max-height:none">${o[3].map(atk).join("")}</ul>` : ""}</div>
+${spells.length ? `<div class="p"><div class="k">Spells</div><div class="boxes" style="grid-template-columns:repeat(2,1fr)">${box(dc, "Spell save DC", "#9fe0d0")}${box(sg(md(cs) + PB), "Spell attack", "#e58fb6")}</div><ul class="tr" style="max-height:none">${spells.map(spl1).join("")}</ul></div>` : ""}
+<div class="p"><div class="k">Skills · ★ = proficient</div><div class="boxes" style="grid-template-columns:repeat(2,1fr)">${box(sg(PB), "Proficiency", "#f3c26b")}${box(10 + sk("Perception"), "Passive Perception", "#9fe0d0")}</div><ul class="tr two" style="max-height:none">${SKL.map(([n]) => `<li>${prof.includes(n) ? `<b>★ ${n}</b>` : n} ${sg(sk(n))}</li>`).join("")}</ul>
 <div class="k" style="margin-top:12px">Equipment</div><p style="margin-top:6px">${o[1]}${o[3].length ? ` · ${o[4]} GP` : ""}</p></div></div></div>`;
 }
 // ---- Ready-made characters ----
@@ -543,24 +565,28 @@ function exm() {
       const x = SP.find((s) => s.n == e[1]),
         l = x.L[e[2]],
         c = CL.find((k) => k[0] == e[4]);
-      return `<button class="tile" data-x="${i}">${ch({ ...x.v, ...(l ? l.v : {}), robe: c[5] }, "40 30 220 220")}${e[0]}<small class="note" style="display:block;padding:0 8px">${l ? l.n.replace(/ Elf$/, "") + " " : ""}${e[1]} ${e[4]}<br>${e[5]}</small></button>`;
+      return `<button class="tile" data-x="${i}">${ch({ ...x.v, ...(l ? l.v : {}), robe: c[5] }, "40 30 220 220")}${e[0]}<small class="note" style="display:block;padding:0 8px">${l ? l.n.replace(/ ·.*| Elf$/, "") + " " : ""}${e[1]} ${e[4]}<br>${e[5]}</small></button>`;
     }).join("")}</div>`;
   document.querySelectorAll("[data-x]").forEach(
     (b) =>
       (b.onclick = () => {
         const e = EX[+b.dataset.x];
-        build(
-          SP.findIndex((s) => s.n == e[1]),
-          e[2],
-          BG.findIndex((k) => k[0] == e[3]),
-          CL.findIndex((k) => k[0] == e[4]),
+        askLevel("", exm, (lv) =>
+          build(
+            SP.findIndex((s) => s.n == e[1]),
+            e[2],
+            BG.findIndex((k) => k[0] == e[3]),
+            CL.findIndex((k) => k[0] == e[4]),
+            lv,
+          ),
         );
       }),
   );
   $("m2").classList.add("on");
 }
 // Fill every step with recommended picks and jump to the summary
-function build(si, li, bi, ci) {
+function build(si, li, bi, ci, lv = 1) {
+  S.lv = lv;
   S.s = si;
   S.l[si] = li;
   S.b = bi;
@@ -579,15 +605,26 @@ function build(si, li, bi, ci) {
 }
 // Bardic Inspiration: a few questions, then a character built from the answers
 function quiz(i = 0, ans = []) {
-  if (i == QZ.length) return build(...fromQuiz(ans));
-  const [q, opts] = QZ[i];
+  const n = QZ.length + 1,
+    head = `<div class="note">Question ${i + 1} of ${n}</div><div class="bar"><i style="width:${(i / n) * 100}%"></i></div>`;
   $("m2t").textContent = "Bardic Inspiration";
+  if (i == QZ.length)
+    return askLevel(head, () => quiz(i - 1, ans.slice(0, -1)), (lv) => build(...fromQuiz(ans), lv));
+  const [q, opts] = QZ[i];
   $("m2b").innerHTML =
-    `<div class="note">Question ${i + 1} of ${QZ.length}</div><div class="bar"><i style="width:${(i / QZ.length) * 100}%"></i></div><h3 class="qq">${q}</h3><div class="sg">${opts.map((o, k) => `<button class="sc qa" data-q="${k}"><div class="sh"><b>${o.t}</b></div>${o.h ? `<p>${o.h}</p>` : ""}</button>`).join("")}</div>${i ? '<button class="nav" id="qb" style="margin-top:14px">◀ Back</button>' : ""}`;
+    `${head}<h3 class="qq">${q}</h3><div class="sg">${opts.map((o, k) => `<button class="sc qa" data-q="${k}"><div class="sh"><b>${o.t}</b></div>${o.h ? `<p>${o.h}</p>` : ""}</button>`).join("")}</div>${i ? '<button class="nav" id="qb" style="margin-top:14px">◀ Back</button>' : ""}`;
   document.querySelectorAll("[data-q]").forEach(
     (b) => (b.onclick = () => quiz(i + 1, [...ans, +b.dataset.q])),
   );
   if (i) $("qb").onclick = () => quiz(i - 1, ans.slice(0, -1));
+  $("m2").classList.add("on");
+}
+// Last question for quick build and ready-made characters: starting level
+function askLevel(head, back, done) {
+  $("m2b").innerHTML =
+    `${head}<h3 class="qq">What level is your adventure starting at?</h3><p class="note">New to D&amp;D or starting a new campaign? Pick level 1. If you're joining a game already underway, ask your DM.</p><div class="lvls">${Array.from({ length: 12 }, (_, i) => `<button class="sc qa" data-lv="${i + 1}"><b>${i + 1}</b>${i ? "" : "<small>Recommended</small>"}</button>`).join("")}</div><button class="nav" id="qb" style="margin-top:14px">◀ Back</button>`;
+  document.querySelectorAll("[data-lv]").forEach((b) => (b.onclick = () => done(+b.dataset.lv)));
+  $("qb").onclick = back;
   $("m2").classList.add("on");
 }
 // Answers -> [species, lineage, background, class] indexes

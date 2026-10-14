@@ -583,7 +583,7 @@ function quiz(i = 0, ans = []) {
   const [q, opts] = QZ[i];
   $("m2t").textContent = "Bardic Inspiration";
   $("m2b").innerHTML =
-    `<div class="note">Question ${i + 1} of ${QZ.length}</div><div class="bar"><i style="width:${(i / QZ.length) * 100}%"></i></div><h3 class="qq">${q}</h3><div class="sg">${opts.map((o, k) => `<button class="sc qa" data-q="${k}"><div class="sh"><b>${o.e} ${o.t}</b></div>${o.h ? `<p>${o.h}</p>` : ""}</button>`).join("")}</div>${i ? '<button class="nav" id="qb" style="margin-top:14px">◀ Back</button>' : ""}`;
+    `<div class="note">Question ${i + 1} of ${QZ.length}</div><div class="bar"><i style="width:${(i / QZ.length) * 100}%"></i></div><h3 class="qq">${q}</h3><div class="sg">${opts.map((o, k) => `<button class="sc qa" data-q="${k}"><div class="sh"><b>${o.t}</b></div>${o.h ? `<p>${o.h}</p>` : ""}</button>`).join("")}</div>${i ? '<button class="nav" id="qb" style="margin-top:14px">◀ Back</button>' : ""}`;
   document.querySelectorAll("[data-q]").forEach(
     (b) => (b.onclick = () => quiz(i + 1, [...ans, +b.dataset.q])),
   );

@@ -17,12 +17,6 @@
         src: url("assets/fonts/PixelPurl.ttf") format("truetype");
         font-display: swap;
       }
-      /* Personal-use licence, see assets/fonts/WindrawAesthetic-LICENSE.txt */
-      @font-face {
-        font-family: "Windraw Aesthetic";
-        src: url("assets/fonts/WindrawAesthetic-Italic.ttf") format("truetype");
-        font-display: swap;
-      }
       :root {
         /* The tavern is 240 x 180 pixel-art units. --w is how wide it's drawn,
            --u is one art pixel, so everything below is placed in art pixels. */
@@ -71,7 +65,7 @@
         top: clamp(1.5rem, 7vh, 5rem);
         left: 50%;
         translate: -50% 0;
-        width: min(100% - 2rem, 760px);
+        width: min(100% - 4rem, 760px);
         text-align: center;
         z-index: 2;
       }
@@ -81,15 +75,10 @@
         letter-spacing: 0.04em;
         text-shadow: 6px 6px 0 #3a0a06;
       }
-      .tag {
-        margin: -0.4rem 0 1rem;
-        font: clamp(1.6rem, 4vw, 2.6rem) / 1.2 "Windraw Aesthetic", cursive;
-        color: var(--gold);
-        text-shadow: 0 2px 10px #000;
-      }
       .deck {
-        margin: 0;
-        font-size: clamp(1rem, 1.6vw, 1.15rem);
+        margin: 0.4rem 0 0;
+        font-size: clamp(1.25rem, 2vw, 1.5rem);
+        line-height: 1.35;
         text-shadow: 0 2px 8px #000;
       }
 
@@ -149,6 +138,9 @@
       .label b {
         font: 400 max(calc(4.2 * var(--u)), 12px) "PixelPurl", monospace;
       }
+      .nw {
+        white-space: nowrap;
+      }
       .label small {
         font: 700 max(calc(2.4 * var(--u)), 8.5px) "DM Sans", sans-serif;
         letter-spacing: 0.06em;
@@ -170,12 +162,16 @@
         .portal.r {
           left: calc(148 * var(--u));
         }
+        /* two lines per label so the text can be bigger */
         .label {
           width: min(31vw, 130px);
-          white-space: nowrap;
+          aspect-ratio: auto;
+          padding: 9px 10px 12px;
+          text-wrap: balance;
         }
         .label b {
-          font-size: min(2.9vw, 12px);
+          font-size: min(5.6vw, 22px);
+          line-height: 1.1;
         }
         .label small {
           display: none;
@@ -188,7 +184,6 @@
         h1 {
           font-size: 3rem;
         }
-        .tag,
         .deck {
           display: none;
         }
@@ -285,7 +280,7 @@
       </a>
       <a class="portal" href="builder.html#ready" style="--x: 120; --y: 132; --glow: #8a5ae0">
         <img class="gate" src="assets/portal-purple.svg" alt="" />
-        <span class="label"><b>Use ready-made</b><small>Pick a hero &amp; tweak</small></span>
+        <span class="label"><b>Use <span class="nw">ready-made</span></b><small>Pick a hero &amp; tweak</small></span>
       </a>
       <a class="portal r" href="builder.html#quick" style="--x: 207; --y: 138; --glow: #e0404e">
         <img class="gate" src="assets/portal-red.svg" alt="" />
@@ -298,8 +293,8 @@
     <div class="shade"></div>
     <header class="title">
       <h1>Origin</h1>
-      <p class="tag">a character creation tool</p>
-      <p class="deck">Every hero starts somewhere. Where will yours begin?</p>
+      <p class="deck">Every hero starts somewhere.</p>
+      <p class="deck">Where will yours begin?</p>
     </header>
     <div class="flash" id="flash"></div>
     <script>
